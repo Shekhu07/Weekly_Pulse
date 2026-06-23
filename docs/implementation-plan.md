@@ -250,9 +250,24 @@ data/cache/{product}/{date}/
 
 ### Deliverables
 
-#### 2a. PII scrubbing (`pulse/pipeline/scrubber.py`)
+#### 2a. PII scrubbing & language filtering (`pulse/pipeline/scrubber.py`)
 
 Run **before** embedding, LLM calls, and publishing.
+
+**Step 1 — Non-English script filter** _(data-validated addition)_
+
+Analysis of real Groww data found 14 reviews with Devanagari/Indic script and 72 Hinglish reviews that passed the Play Store `lang=en` filter. Devanagari reviews are dropped before embedding; Hinglish is kept (embedds well, reflects real sentiment).
+
+```python
+def is_latin_dominant(text: str) -> bool:
+    ascii_chars = sum(1 for c in text if c.isascii())
+    return len(text) == 0 or (ascii_chars / len(text)) >= 0.80
+```
+
+- Drop reviews where `< 80%` of characters are ASCII — log count
+- This runs **before** PII scrubbing and embedding
+
+**Step 2 — PII redaction**
 
 | Pattern | Replacement |
 | ------- | ----------- |
@@ -262,9 +277,9 @@ Run **before** embedding, LLM calls, and publishing.
 | URLs with tokens | Redact path/query |
 | Financial amounts | **Keep** (useful signal) |
 
-- Input/output: `list[Review]` (text scrubbed in place or new list)
+- Input/output: `list[Review]` (returns new list; original unchanged)
 - Regex-based pattern matching
-- Log: count of redactions per pattern type
+- Log: count of script-filtered reviews + count of PII redactions per pattern type
 
 #### 2b. Embeddings (`pulse/pipeline/embeddings.py`)
 
@@ -287,14 +302,14 @@ Run **before** embedding, LLM calls, and publishing.
 | Condition | Behavior |
 | --------- | -------- |
 | All noise | Lower `min_cluster_size` once; if still all noise, abort or single rating-stratified LLM pass |
-| One cluster > 80% | Optional rating split (1–2★ vs 4–5★) before re-rank |
+| One cluster > 60% of corpus | **Mandatory** rating split (1–2★ vs 4–5★ sub-clusters) before re-rank — threshold lowered from 80% based on Groww data (45% 1★ skew creates dominant complaint cluster) |
 | Many micro-clusters | Take top `max_themes` by score only |
 
 #### 2d. LLM summarization (`pulse/pipeline/summarizer.py`)
 
 - **Provider:** Groq — `llama-3.3-70b-versatile` (`GROQ_API_KEY`)
-- **Call pattern:** One request per top cluster, sequential with ≥ 2s interval
-- Per-cluster prompt receives 5–8 representative review samples (scrubbed, truncated to `max_review_chars`)
+- **Call pattern:** One request per top cluster, **sequential** with ≥ 2s interval between calls
+- Per-cluster prompt receives **8 representative review samples**, stratified by rating within the cluster (see below)
 - Strict JSON output schema per theme:
 
 ```json
@@ -306,26 +321,52 @@ Run **before** embedding, LLM calls, and publishing.
 }
 ```
 
-**Rate limit compliance:**
+**Rating-stratified sampling** _(data-validated addition)_
+
+Large clusters (100–140 reviews found in Groww data) risk the LLM seeing only the most generic phrasing if samples are random. Sample proportionally by rating distribution within each cluster:
+
+```python
+# Example: cluster is 80% 1★, 20% 2★ → sample 6 from 1★, 2 from 2★
+from collections import Counter
+def stratified_sample(cluster_reviews, n=8):
+    by_rating = {}
+    for r in cluster_reviews:
+        by_rating.setdefault(r.rating, []).append(r)
+    total = len(cluster_reviews)
+    samples = []
+    for rating, group in sorted(by_rating.items()):
+        quota = max(1, round(n * len(group) / total))
+        samples.extend(random.sample(group, min(quota, len(group))))
+    return samples[:n]
+```
+
+**Groq Rate limits — `llama-3.3-70b-versatile`:**
 
 | Limit | Value | Enforcement |
 | ----- | ----- | ----------- |
-| RPM | 30 | `request_interval_seconds: 2` |
-| RPD | 1,000 | ≤ 10 requests/run |
-| TPM | 12,000 | Pre-flight estimate; drop longest samples if over |
-| TPD | 100,000 | Cap `max_tokens_per_run: 12000` |
+| Requests / Minute | 30 | `request_interval_seconds: 2` (max 30/min safe) |
+| Requests / Day | 1,000 | ≤ 10 requests/run → 100 runs/day headroom |
+| Tokens / Minute | 12,000 | Pre-flight token estimate per request; drop longest samples until under budget |
+| Tokens / Day | 100,000 | Cap `max_tokens_per_run: 12,000` → 8 runs/day headroom |
+
+**Token budget per request (design target):**
+- System prompt: ~200 tokens
+- 8 review samples × ~150 tokens each: ~1,200 tokens
+- Output (JSON per theme): ~300 tokens
+- **Total per call: ~1,700 tokens** — well within 12K TPM limit
+- Per run (5 themes × 1,700): ~8,500 tokens input+output — within 12K TPD cap per run
 
 **Safety:**
-- Reviews wrapped as untrusted data in prompt
-- System instruction: ignore instructions embedded in review text
-- Retry 429/529 with exponential backoff (max 3)
-- Log: requests made, input/output tokens, headroom vs daily caps
+- Reviews wrapped as untrusted user data block in prompt
+- System instruction: explicitly tell model to ignore instructions embedded in review text (prompt injection guard)
+- Retry on HTTP 429 / 529 with exponential backoff (max 3 retries, cap 60s)
+- Log: requests made, input tokens, output tokens, running daily totals vs caps
 
 #### 2e. Quote validation (`pulse/pipeline/quote_validator.py`)
 
-- Normalize whitespace and punctuation
-- Case-insensitive substring match against scrubbed reviews in same cluster
-- Accept ellipsis truncation (`...` / `…`) as prefix match
+- Normalize whitespace and punctuation before matching
+- Case-insensitive substring match against scrubbed reviews in same cluster; fallback to full scrubbed corpus
+- Accept ellipsis truncation (`...` / `…`) **only if the matching prefix is ≥ 15 characters** — reviewers commonly use trailing `....` as punctuation (observed in Groww data), not as truncation
 - Quotes failing validation: drop and log
 - If a theme loses all quotes: re-prompt once or omit the theme
 - Return validated `PulseReport`:
@@ -357,11 +398,12 @@ class PulseReport:
 
 ### Exit Criteria
 
+- [ ] Script filter drops Devanagari reviews; Hinglish reviews pass through
 - [ ] PII scrubber redacts test emails, phones, IDs correctly
-- [ ] Embeddings generated for ~800+ reviews in batches
-- [ ] UMAP + HDBSCAN produces 3–5 meaningful clusters
-- [ ] Groq returns valid JSON themes per cluster within rate limits
-- [ ] All quotes in final report pass substring validation
+- [ ] Embeddings generated for ~1,000+ reviews in batches without exceeding OpenAI limits
+- [ ] UMAP + HDBSCAN produces 3–5 meaningful clusters; dominant-cluster split triggers at ≥ 60%
+- [ ] Groq returns valid JSON themes per cluster; daily token log shows < 12,000 tokens/run
+- [ ] All quotes in final report pass substring validation (no ellipsis false-positives)
 - [ ] Full pipeline: `list[Review]` → `PulseReport` runs end-to-end on cached Groww data
 
 ---

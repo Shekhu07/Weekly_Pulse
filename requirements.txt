@@ -6,8 +6,8 @@ python-dotenv>=1.0
 # Ingestion
 google-play-scraper>=1.2
 
-# Embeddings
-openai>=1.0
+# Embeddings (local, no API key)
+sentence-transformers>=2.7
 
 # Clustering
 umap-learn>=0.5

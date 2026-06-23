@@ -266,7 +266,7 @@ sequenceDiagram
 | `text` | `string` | Review body passing quality filters |
 | `rating` | `int` | 1–5 stars |
 
-**Phase 1 normalization** (before cache write): ≥ 8 words, English-only (`allowed_language: en`), no emoji. Typical Groww pull: ~800–900 normalized reviews from ~5,000 raw (~17% kept). Future fields (`review_id`, `published_at`, `language`) may be added without changing the scrub → embed → cluster flow.
+**Phase 1 normalization** (before cache write): ≥ 8 words, English-only (`allowed_language: en`), no emoji. Real Groww data (2026-06-23): **1,066 normalized reviews from 5,000 raw (~21% kept)**. 14 Devanagari-script reviews pass the Play Store `lang=en` filter and are caught by the Phase 2a script filter (see §7.1). Future fields (`review_id`, `published_at`, `language`) may be added without changing the scrub → embed → cluster flow.
 
 ### Design Decisions
 
@@ -283,9 +283,23 @@ sequenceDiagram
 
 **ML floor:** If normalized review count < 20, abort before embedding (orchestrator may also enforce `min_reviews` from product config).
 
-### 7.1 PII Scrubbing
+### 7.1 PII Scrubbing & Language Filtering
 
-Run **before** embedding, LLM calls, and publishing.
+Run **before** embedding, LLM calls, and publishing. Two steps:
+
+**Step 1 — Non-English script filter** _(data-validated, added after Groww analysis)_
+
+The Play Store `lang=en` parameter does not fully suppress Indic-script reviews. Real Groww data contained **14 Devanagari-script reviews** that passed Phase 1 normalization (they had ≥ 8 Latin characters embedded). These are dropped before embedding to prevent noisy cluster outliers. Hinglish (Hindi in Latin script, 72 reviews found) is **kept** — it embeds meaningfully and reflects real user sentiment.
+
+```python
+def is_latin_dominant(text: str) -> bool:
+    ascii_chars = sum(1 for c in text if c.isascii())
+    return len(text) == 0 or (ascii_chars / len(text)) >= 0.80
+```
+
+Drop reviews where `< 80%` of characters are ASCII; log the count per run.
+
+**Step 2 — PII redaction**
 
 | Pattern Class | Action |
 | ------------- | ------ |
@@ -301,14 +315,16 @@ Scrubbed text is used for embedding, LLM prompts, Doc output, and quote validati
 
 ```mermaid
 flowchart TD
-    A["Scrubbed reviews<br/>(text + rating)"] --> B{"count ≥ 20?"}
+    A["Script-filtered + scrubbed reviews<br/>(text + rating)"] --> B{"count ≥ 20?"}
     B -- "no" --> C["Abort run"]
     B -- "yes" --> D["OpenAI text-embedding-3-small<br/>batch encode"]
     D --> E["UMAP<br/>random_state=42"]
     E --> F["HDBSCAN<br/>min_cluster_size=5"]
     F --> G["Rank: score = size × (6 − avg_rating)"]
-    G --> H{"Fallbacks needed?"}
-    H --> I["Select 5–8 samples<br/>per top cluster"]
+    G --> H{"Dominant cluster > 60%?"}
+    H -- "yes" --> HA["Mandatory rating split<br/>1-2★ vs 4-5★ sub-clusters"]
+    H -- "no" --> I["Rating-stratified sample<br/>8 reviews per top cluster"]
+    HA --> I
     I --> J["Top N clusters → Groq"]
 ```
 
@@ -321,9 +337,9 @@ flowchart TD
 | UMAP `random_state` | 42 | `pipeline.clustering.umap.random_state` |
 | HDBSCAN `min_cluster_size` | 5 | `pipeline.clustering.hdbscan.min_cluster_size` |
 | Top clusters to summarize | 3–5 | `pipeline.summarization.max_themes` |
-| Samples per cluster | 5–8 (medoid + diversity) | `pipeline.summarization.max_samples_per_cluster` |
+| Samples per cluster | **8, rating-stratified** | `pipeline.summarization.max_samples_per_cluster` |
 
-**Cluster ranking:** `score = cluster_size × (6 − avg_rating)` — prioritizes large low-star complaint themes (Groww cache is typically ~53% 1–2★).
+**Cluster ranking:** `score = cluster_size × (6 − avg_rating)` — prioritizes large low-star complaint themes. Real Groww data: **45% 1★ reviews** across overlapping complaint topics — ranking correctly surfaces the highest-signal pain points.
 
 **Noise cluster** (label = −1) reviews are excluded from theme generation unless volume exceeds a configurable threshold.
 
@@ -332,27 +348,51 @@ flowchart TD
 | Condition | Behavior |
 | --------- | -------- |
 | All noise | Lower `min_cluster_size` once; if still all noise, abort or single rating-stratified LLM pass |
-| One cluster > 80% | Optional rating split (1–2★ vs 4–5★) before re-rank |
+| One cluster > 60% of corpus | **Mandatory** rating split (1–2★ vs 4–5★ sub-clusters) before re-rank. Threshold lowered from 80%: Groww's 45% 1★ skew would easily create a dominant complaint cluster without this guard |
 | Many micro-clusters | Take top `max_themes` by score only |
 
 ### 7.3 LLM Summarization (Groq)
 
 **Provider:** Groq — `llama-3.3-70b-versatile`. Embeddings remain on OpenAI; only summarization uses Groq (`GROQ_API_KEY`).
 
-**Call pattern:** One Groq request per top cluster (not one mega-prompt). Sequential calls with rate limiting — no parallel LLM requests.
+**Call pattern:** One Groq request per top cluster (not one mega-prompt). Sequential calls with ≥ 2s interval — no parallel LLM requests.
 
-| Groq Limit | Value | Pipeline Implication |
-| ---------- | ----- | -------------------- |
-| Requests / minute | 30 | ≥ 2s between requests (`request_interval_seconds`) |
-| Requests / day | 1,000 | ~5 themes + ≤ 5 re-prompts ≈ 10 req/run |
-| Tokens / minute | 12,000 | Pre-flight estimate per request < 10K tokens |
-| Tokens / day | 100,000 | Cap `max_tokens_per_run` at 12,000 |
+**Groq rate limits — `llama-3.3-70b-versatile`:**
 
-Each per-cluster request receives:
+| Limit | Value | Pipeline Enforcement |
+| ----- | ----- | -------------------- |
+| Requests / Minute | 30 | `request_interval_seconds: 2` (max 30/min safe) |
+| Requests / Day | 1,000 | ≤ 10 req/run (5 themes + ≤ 5 re-prompts) → 100 runs/day headroom |
+| Tokens / Minute | 12,000 | Pre-flight token estimate per request; drop longest samples if over budget |
+| Tokens / Day | 100,000 | Cap `max_tokens_per_run: 12,000` → ~8 runs/day headroom |
 
-- 5–8 representative review samples (scrubbed, truncated to `max_review_chars`)
-- Cluster size and average rating
-- Untrusted-data framing; strict JSON schema output
+**Rating-stratified sampling** _(data-validated, added after Groww analysis)_
+
+Real Groww clusters contain 100–140 reviews each. Random sampling risks the LLM seeing only the most generic phrasing. Instead, sample **8 reviews proportionally by star rating within each cluster** — ensuring the LLM sees the full sentiment range at no extra token cost.
+
+```python
+# Example: cluster is 80% 1★, 20% 2★ → sample 6 from 1★, 2 from 2★
+def stratified_sample(cluster_reviews, n=8):
+    by_rating = {}
+    for r in cluster_reviews:
+        by_rating.setdefault(r.rating, []).append(r)
+    total = len(cluster_reviews)
+    samples = []
+    for rating, group in sorted(by_rating.items()):
+        quota = max(1, round(n * len(group) / total))
+        samples.extend(random.sample(group, min(quota, len(group))))
+    return samples[:n]
+```
+
+**Token budget per request (design target):**
+
+| Component | Tokens |
+| --------- | ------ |
+| System prompt | ~200 |
+| 8 review samples × ~150 tokens | ~1,200 |
+| Output JSON per theme | ~300 |
+| **Total per call** | **~1,700** |
+| Per full run (5 themes) | **~8,500** — within 12K TPD cap per run |
 
 **Output schema (per theme):**
 
@@ -370,23 +410,22 @@ Each per-cluster request receives:
 }
 ```
 
-**Prompt safety and budget:**
+**Prompt safety:**
 
-- Reviews wrapped as untrusted data (e.g. XML/markdown fenced blocks).
-- System instruction: ignore instructions embedded in review text.
+- Reviews wrapped as untrusted user data block (XML/markdown fenced).
+- System instruction: explicitly ignore instructions embedded in review text (prompt injection guard).
 - Pre-flight token estimate; if over budget, drop longest samples first.
-- Retry 429/529 with exponential backoff (max 3).
-- Log per run: requests made, input/output tokens, headroom vs daily caps.
+- Retry HTTP 429/529 with exponential backoff (max 3 retries, cap 60s).
+- Log per run: requests made, input tokens, output tokens, running daily totals vs caps.
 - Re-prompt once per cluster if all quotes fail (counts toward RPM/RPD); omit theme if still invalid.
-- Typical dry-run on ~872 reviews: ≤ 10 LLM requests, ≤ 12K total tokens (usually ~6–8K).
 
 ### 7.4 Quote Validation
 
 Every Groq-produced quote must pass validation before inclusion in the report:
 
 1. Normalize whitespace and punctuation on quote and candidate review texts.
-2. Require **case-insensitive substring match** against at least one scrubbed review in the same cluster (full scrubbed corpus as fallback).
-3. Accept ellipsis truncation (`...` / `…`) as prefix match when the LLM shortens a long quote.
+2. Require **case-insensitive substring match** against at least one scrubbed review in the same cluster; fallback to the full scrubbed corpus.
+3. Accept ellipsis truncation (`...` / `…`) as prefix match **only if the matched prefix is ≥ 15 characters**. Groww reviews commonly end sentences with trailing `....` as casual punctuation (not truncation) — a short prefix would cause false-positive matches.
 4. Typos and Hinglish-in-English: case-insensitive match only — no translation required.
 5. Quotes failing validation are **dropped and logged**; if a theme loses all quotes, re-prompt once or omit the theme.
 
@@ -735,10 +774,14 @@ Architectural extension points already implied by the design:
 | Delivery to Google | In-repo MCP servers | Matches problem constraint; isolates OAuth |
 | Doc as source of truth | Append sections with anchors | History + idempotency + stakeholder link target |
 | Email content | Teaser + deep link | Avoid duplicate maintenance |
+| Language filter (Phase 2a) | Latin-dominance check (≥ 80% ASCII) | Play Store `lang=en` does not fully suppress Devanagari; 14 such reviews found in real Groww data |
 | Clustering | UMAP + HDBSCAN | Unsupervised theme discovery without fixed taxonomy |
-| Cluster ranking | `size × (6 − avg_rating)` | Surfaces actionable low-star complaint themes |
-| Summarization LLM | Groq `llama-3.3-70b-versatile` | Cost-effective; per-cluster calls respect 12K TPM |
-| Embeddings | OpenAI `text-embedding-3-small` | Separate from Groq; batch-friendly for ~800+ reviews |
+| Cluster ranking | `size × (6 − avg_rating)` | Surfaces actionable low-star complaint themes; 45% 1★ skew in Groww data validates this |
+| Dominant-cluster threshold | 60% (mandatory split) | Lowered from 80%: Groww's 1★ skew creates a large complaint cluster that would obscure distinct sub-themes at 80% |
+| LLM sample selection | 8 reviews, rating-stratified per cluster | Clusters of 100–140 reviews; stratification ensures LLM sees full sentiment range at no extra token cost |
+| Summarization LLM | Groq `llama-3.3-70b-versatile` | Cost-effective; ~1,700 tokens/call, ~8,500/run — well within 12K TPM and 100K TPD limits |
+| Embeddings | OpenAI `text-embedding-3-small` | Separate from Groq; batch-friendly for ~1,000+ reviews |
+| Quote ellipsis rule | ≥ 15-char prefix required | Reviewers use trailing `....` as punctuation; short-prefix match causes false-positives |
 | Quote trust | Post-LLM substring validation against scrubbed text | Prevents fabricated user voice |
 | Idempotency | Anchor + email key + ledger | Safe weekly cron and backfill |
 | v1 scope | Groww Play Store only | Reduce ingestion and config surface |
