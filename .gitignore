@@ -1,0 +1,39 @@
+# Data & cache
+data/
+
+# Environment
+.env
+.env.local
+
+# Google OAuth
+token.json
+credentials.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+
+# SQLite
+*.db
+*.sqlite

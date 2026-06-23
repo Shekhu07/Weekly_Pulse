@@ -1,0 +1,24 @@
+# Core
+pyyaml>=6.0
+click>=8.1
+python-dotenv>=1.0
+
+# Ingestion
+google-play-scraper>=1.2
+
+# Embeddings
+openai>=1.0
+
+# Clustering
+umap-learn>=0.5
+hdbscan>=0.8
+numpy>=1.24
+
+# LLM
+groq>=0.4
+
+# MCP delivery
+requests>=2.31
+
+# Testing
+pytest>=7.4
