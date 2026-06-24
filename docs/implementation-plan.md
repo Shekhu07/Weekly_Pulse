@@ -736,6 +736,7 @@ graph TD
     P5["Phase 5<br/>Gmail MCP"]
     P6["Phase 6<br/>Orchestrator/CLI/Ledger"]
     P7["Phase 7<br/>Testing/Polish"]
+    P8["Phase 8<br/>Streamlit UI"]
 
     P0 --> P1
     P1 --> P2
@@ -745,6 +746,7 @@ graph TD
     P4 --> P6
     P5 --> P6
     P6 --> P7
+    P7 --> P8
 ```
 
 > **Note:** Phases 4 and 5 can be developed in parallel once Phase 3 is complete.
@@ -756,6 +758,7 @@ graph TD
 | Component | Technology |
 | --------- | ---------- |
 | Language | Python 3.11+ |
+| UI Framework | Streamlit |
 | CLI | Click |
 | Play Store scraping | `google-play-scraper` |
 | Embeddings | OpenAI `text-embedding-3-small` |
@@ -785,6 +788,7 @@ hdbscan
 numpy
 requests
 pytest
+streamlit
 ```
 
 ---
@@ -806,3 +810,10 @@ pytest
 - [problemStatement.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/problemStatement.md) — Product intent, requirements, and non-goals
 - [architecture.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/architecture.md) — Technical architecture, data flows, MCP integration
 - [edge-cases.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/edge-cases.md) — Clustering fallbacks, quote validation, and failure modes (created in Phase 7)
+
+---
+
+### Phase 8: Streamlit UI
+- Transitioned the core execution model to a visual dashboard.
+- Features real-time log streaming, historical ledger view, and quick configuration access.
+- Implemented as `app.py`.

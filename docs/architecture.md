@@ -29,6 +29,7 @@ graph TB
     end
 
     subgraph "This Repository"
+        UI["Streamlit UI / Dashboard"]
         CLI["Pulse CLI / Scheduler"]
         Agent["Pulse Agent<br/>(MCP Host)"]
         Ingest["Play Store Ingestion"]
@@ -52,6 +53,7 @@ graph TB
         Inbox["Stakeholder Inboxes"]
     end
 
+    UI --> Agent
     CLI --> Agent
     Agent --> Ingest
     Agent --> Pipeline
