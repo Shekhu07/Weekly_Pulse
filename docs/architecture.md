@@ -495,15 +495,18 @@ graph LR
 
     subgraph "Railway Hosted MCP Server"
         DT1["/append_to_doc"]
+        DT2["/search_doc"]
         GT1["/create_email_draft"]
         DC["Google Docs API Client"]
         GC["Gmail API Client"]
     end
 
     Agent -- "HTTP POST" --> DT1
+    Agent -- "HTTP POST" --> DT2
     Agent -- "HTTP POST" --> GT1
 
     DT1 --> DC
+    DT2 --> DC
     GT1 --> GC
 
     DC --> DocsAPI["Google Docs API"]
@@ -514,7 +517,10 @@ graph LR
 
 | Endpoint | Purpose | Key Inputs |
 | -------- | ------- | ---------- |
+| `/search_doc` | Idempotency lookup | `doc_id`, `anchor` |
 | `/append_to_doc` | Add weekly section | `doc_id`, `content` |
+
+**Idempotency fallback:** If `/search_doc` returns a 404 (e.g. older server version), the agent will gracefully skip the check and proceed to append.
 
 **Credential handling:** The agent authenticates to the railway server using an `X-API-Key` configured via `MCP_API_KEY`. Google OAuth credentials (`credentials.json` and `token.json`) are injected into the Railway server via the `GOOGLE_CREDENTIALS_JSON` and `GOOGLE_TOKEN_JSON` raw JSON environment variables, avoiding the need to commit them to the repository or deploy them as files.
 

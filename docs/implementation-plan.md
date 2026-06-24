@@ -491,6 +491,7 @@ Connect to the external MCP server deployed at `https://map-server-abhishek-prod
 
 | Endpoint | Method | Purpose |
 | -------- | ------ | ------- |
+| `/search_doc` | POST | Search for an anchor text |
 | `/append_to_doc` | POST | Append text content to a Google Doc |
 
 - Agent sends structured content from `DocSection` to the MCP server
@@ -501,9 +502,10 @@ Connect to the external MCP server deployed at `https://map-server-abhishek-prod
 
 #### 4.2 Idempotent Doc writes
 
-- Before appending, search the document for an existing heading matching the anchor text (`Groww — Weekly Review Pulse — 2026-W23`)
+- Before appending, search the document for an existing heading matching the anchor text (`Groww — Weekly Review Pulse — 2026-W23`) via the `POST /search_doc` endpoint.
 - If found → return existing info; **do not append again**
 - If not found → append section at end
+- If the endpoint returns a `404 Not Found` (meaning it's not yet deployed on the remote server), gracefully log a warning and proceed to append anyway.
 - Implementation: check heading text in document content before write
 
 #### 4.3 Content formatting
