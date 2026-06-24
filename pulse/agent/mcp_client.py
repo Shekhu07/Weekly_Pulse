@@ -58,6 +58,9 @@ def append_doc_section(doc_section: DocSection, product_config: dict) -> dict:
             for attempt in range(1, _MAX_RETRIES + 1):
                 try:
                     search_resp = client.post("/search_doc", json=search_payload)
+                    if search_resp.status_code == 404:
+                        logger.warning("MCP server does not support /search_doc. Skipping document idempotency check.")
+                        break # Skip search check, proceed to append
                     search_resp.raise_for_status()
                     search_data = search_resp.json()
                     
@@ -69,8 +72,8 @@ def append_doc_section(doc_section: DocSection, product_config: dict) -> dict:
                         }
                     break # Search successful, not found, proceed to append
                 except httpx.HTTPStatusError as e:
-                    if e.response.status_code in (401, 403, 404):
-                        raise RuntimeError(f"Fatal Docs MCP error ({e.response.status_code}): {e.response.text}") from e
+                    if e.response.status_code in (401, 403):
+                        raise RuntimeError(f"Fatal Docs MCP auth error ({e.response.status_code}): {e.response.text}") from e
                     last_err = e
                 except httpx.RequestError as e:
                     last_err = e
@@ -79,7 +82,7 @@ def append_doc_section(doc_section: DocSection, product_config: dict) -> dict:
                 if attempt < _MAX_RETRIES:
                     time.sleep(_RETRY_DELAY)
                 else:
-                    raise RuntimeError(f"Failed to search Google Doc after {_MAX_RETRIES} attempts. Last error: {last_err}")
+                    logger.warning(f"Failed to search Google Doc after {_MAX_RETRIES} attempts. Proceeding to append anyway. Last error: {last_err}")
 
         # Append Section
         payload = {
