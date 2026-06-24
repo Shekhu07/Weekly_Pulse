@@ -516,7 +516,7 @@ graph LR
 | -------- | ------- | ---------- |
 | `/append_to_doc` | Add weekly section | `doc_id`, `content` |
 
-**Credential handling:** The agent authenticates to the railway server using an `X-API-Key` configured via `MCP_API_KEY`. Google OAuth credentials are held securely on the railway server.
+**Credential handling:** The agent authenticates to the railway server using an `X-API-Key` configured via `MCP_API_KEY`. Google OAuth credentials (`credentials.json` and `token.json`) are injected into the Railway server via the `GOOGLE_CREDENTIALS_JSON` and `GOOGLE_TOKEN_JSON` raw JSON environment variables, avoiding the need to commit them to the repository or deploy them as files.
 
 ### 9.2 Gmail Delivery
 
@@ -649,7 +649,7 @@ Environment-specific overrides via env vars (e.g. `PULSE_EMAIL_MODE=send`, `GROQ
 
 | Risk | Mitigation |
 | ---- | ---------- |
-| Google OAuth leakage | Credentials only in MCP server env files; gitignored |
+| Google OAuth leakage | Credentials injected into MCP server via environment variables (`GOOGLE_CREDENTIALS_JSON`, `GOOGLE_TOKEN_JSON`); gitignored locally |
 | PII in reports | Scrubber before LLM and publish |
 | Prompt injection via reviews | Data/non-instruction framing; no tool execution from review text |
 | Hallucinated quotes | Substring validator against source reviews |

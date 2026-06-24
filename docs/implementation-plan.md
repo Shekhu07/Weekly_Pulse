@@ -497,6 +497,7 @@ Connect to the external MCP server deployed at `https://map-server-abhishek-prod
 - Handle response: success → extract doc URL / heading info
 - Error handling: retry transient errors with exponential backoff (max 3)
 - Non-transient errors (auth, invalid doc id): fail fast
+- Note: OAuth credentials (`credentials.json`, `token.json`) are injected into the Railway server via `GOOGLE_CREDENTIALS_JSON` and `GOOGLE_TOKEN_JSON` environment variables.
 
 #### 4.2 Idempotent Doc writes
 
@@ -538,6 +539,7 @@ Connect to the external MCP server deployed at `https://map-server-abhishek-prod
 - Agent sends `EmailTeaser` content (to, subject, body) to the MCP server
 - Support `draft` mode (staging default) and `send` mode (production)
 - Handle response: success → extract draft_id / message_id
+- Note: OAuth credentials are injected into the Railway server via raw JSON environment variables, meaning the agent only needs `MCP_API_KEY` to authenticate.
 
 #### 5.2 Idempotent email delivery
 
