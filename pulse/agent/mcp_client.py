@@ -117,11 +117,12 @@ def append_doc_section(doc_section: DocSection, product_config: dict) -> dict:
     raise RuntimeError(f"Failed to append to Google Doc after {_MAX_RETRIES} attempts. Last error: {last_err}")
 
 
-def send_email_teaser(email_teaser: EmailTeaser) -> dict:
+def send_email_teaser(email_teaser: EmailTeaser, email_mode: str = "draft") -> dict:
     """Create a draft or send an email via Gmail MCP server.
 
     Args:
         email_teaser: Email content with recipients and idempotency key.
+        email_mode: "draft" or "send".
 
     Returns:
         Dict with message_id or draft_id.
@@ -135,18 +136,21 @@ def send_email_teaser(email_teaser: EmailTeaser) -> dict:
         "body": email_teaser.text_body
     }
 
+    endpoint = "/send_email" if email_mode == "send" else "/create_email_draft"
+    
     last_err = None
     with _get_mcp_client() as client:
         for attempt in range(1, _MAX_RETRIES + 1):
             try:
-                resp = client.post("/create_email_draft", json=payload)
+                resp = client.post(endpoint, json=payload)
                 resp.raise_for_status()
                 data = resp.json()
                 
-                logger.info(f"Successfully created email draft for {payload['to']}")
+                logger.info(f"Successfully executed email {email_mode} for {payload['to']}")
                 
                 return {
                     "draft_id": data.get("response", {}).get("id"),
+                    "message_id": data.get("response", {}).get("id"),
                     "response": data.get("response")
                 }
             except httpx.HTTPStatusError as e:

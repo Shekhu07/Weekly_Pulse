@@ -113,7 +113,7 @@ def execute_run(run_context: RunContext, product_config: dict, pipeline_config: 
             else:
                 email_mode = run_context.email_mode
                 logger.info(f"Email mode: {email_mode} (Sending to {len(teaser.recipients)} recipients)")
-                email_result = send_email_teaser(teaser)
+                email_result = send_email_teaser(teaser, email_mode=email_mode)
                 record_delivery(
                     run_id, 
                     "gmail", 
