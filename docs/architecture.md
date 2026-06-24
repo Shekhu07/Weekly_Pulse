@@ -487,100 +487,54 @@ Email body is intentionally short:
 
 ## 9. MCP Server Architecture
 
-Both servers are shipped in `mcp-servers/`. They encapsulate Google OAuth, token refresh, and REST calls. The pulse agent communicates with them via the MCP protocol.
+Both services (Docs and Gmail) are provided by a deployed MCP-style server hosted at `map-server-abhishek-production.up.railway.app`. The pulse agent communicates with it via REST/HTTP endpoints.
 
 ```mermaid
 graph LR
     Agent["Pulse Agent<br/>(MCP Client)"]
 
-    subgraph "google-docs-mcp"
-        DT1["append_section"]
-        DT2["find_section_by_anchor"]
-        DT3["get_document_url"]
+    subgraph "Railway Hosted MCP Server"
+        DT1["/append_to_doc"]
+        GT1["/create_email_draft"]
         DC["Google Docs API Client"]
-    end
-
-    subgraph "gmail-mcp"
-        GT1["create_draft"]
-        GT2["send_email"]
-        GT3["check_idempotency"]
         GC["Gmail API Client"]
     end
 
-    Agent -- "stdio" --> DT1
-    Agent -- "stdio" --> DT2
-    Agent -- "stdio" --> DT3
-    Agent -- "stdio" --> GT1
-    Agent -- "stdio" --> GT2
-    Agent -- "stdio" --> GT3
+    Agent -- "HTTP POST" --> DT1
+    Agent -- "HTTP POST" --> GT1
 
     DT1 --> DC
-    DT2 --> DC
-    DT3 --> DC
     GT1 --> GC
-    GT2 --> GC
-    GT3 --> GC
 
     DC --> DocsAPI["Google Docs API"]
     GC --> GmailAPI["Gmail API"]
 ```
 
-### 9.1 Google Docs MCP — Tools
+### 9.1 Google Docs Delivery
 
-| Tool | Purpose | Key Inputs | Key Outputs |
-| ---- | ------- | ---------- | ----------- |
-| `find_section_by_anchor` | Idempotency lookup | `document_id`, `anchor` | `found`, `heading_id`, `url_fragment` |
-| `append_section` | Add weekly section | `document_id`, `anchor`, `blocks[]`, `insert_at_end` | `heading_id`, `revision_id`, `url` |
-| `get_document_url` | Resolve shareable link | `document_id`, `heading_id?` | `url` |
+| Endpoint | Purpose | Key Inputs |
+| -------- | ------- | ---------- |
+| `/append_to_doc` | Add weekly section | `doc_id`, `content` |
 
-**Credential handling:** OAuth client id/secret, refresh token, and scopes live in `config/mcp/docs-mcp.env` (never committed). Server loads env at startup.
+**Credential handling:** The agent authenticates to the railway server using an `X-API-Key` configured via `MCP_API_KEY`. Google OAuth credentials are held securely on the railway server.
 
-**Required scopes:** `https://www.googleapis.com/auth/documents`
+### 9.2 Gmail Delivery
 
-### 9.2 Gmail MCP — Tools
+| Endpoint | Purpose | Key Inputs |
+| -------- | ------- | ---------- |
+| `/create_email_draft` | Create draft | `to`, `subject`, `body` |
 
-| Tool | Purpose | Key Inputs | Key Outputs |
-| ---- | ------- | ---------- | ----------- |
-| `check_idempotency` | Prevent duplicate sends | `idempotency_key` | `already_sent`, `message_id?` |
-| `create_draft` | Staging default | `to[]`, `subject`, `html_body`, `text_body`, `idempotency_key` | `draft_id` |
-| `send_email` | Production send | same as draft | `message_id` |
-
-**Idempotency key format:** `{product}-{iso_week}-email` (e.g. `groww-2026-W23-email`).
-
-**Implementation options (pick one during build):**
-
-- **Ledger inside Gmail MCP:** SQLite table keyed by `idempotency_key`.
-- **Gmail label + search:** Less preferred; ledger is clearer.
-
-**Required scopes:** `https://www.googleapis.com/auth/gmail.compose` or `gmail.send` depending on send vs draft-only policy.
+**Idempotency:** Prevent duplicate sends by relying on the local Pulse Agent's run ledger.
 
 ### 9.3 Pulse Agent MCP Client
 
 The agent:
 
-1. Spawns MCP servers as subprocesses (or connects via configured transport).
-2. Discovers tools via MCP protocol.
-3. Calls tools in order: `find_section_by_anchor` → `append_section` (if needed) → `check_idempotency` → `create_draft` / `send_email`.
+1. Configures the remote server URL: `https://map-server-abhishek-production.up.railway.app`.
+2. Connects over HTTP POST using `httpx`.
+3. Calls endpoints in order during the delivery phase.
 4. **Never imports Google API client libraries for delivery.**
 
-Example agent config (`config/mcp/servers.json`):
-
-```json
-{
-  "mcpServers": {
-    "google-docs": {
-      "command": "node",
-      "args": ["mcp-servers/google-docs-mcp/dist/index.js"],
-      "envFile": "config/mcp/docs-mcp.env"
-    },
-    "gmail": {
-      "command": "node",
-      "args": ["mcp-servers/gmail-mcp/dist/index.js"],
-      "envFile": "config/mcp/gmail-mcp.env"
-    }
-  }
-}
-```
 
 ---
 

@@ -21,7 +21,7 @@ _RETRY_DELAY = 2
 
 
 def _get_mcp_client() -> httpx.Client:
-    url = get_env_var("MCP_SERVER_URL", default="http://localhost:8000")
+    url = get_env_var("MCP_SERVER_URL", default="https://map-server-abhishek-production.up.railway.app")
     api_key = get_env_var("MCP_API_KEY", required=False, default="")
     headers = {"Content-Type": "application/json"}
     if api_key:

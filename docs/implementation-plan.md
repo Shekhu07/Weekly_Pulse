@@ -487,7 +487,7 @@ class EmailTeaser:
 
 #### 4.1 Docs MCP client integration (`pulse/agent/mcp_client.py`)
 
-Connect to the external MCP server (deployed or local). The MCP server exposes:
+Connect to the external MCP server deployed at `https://map-server-abhishek-production.up.railway.app`. The server exposes:
 
 | Endpoint | Method | Purpose |
 | -------- | ------ | ------- |
@@ -529,7 +529,7 @@ Connect to the external MCP server (deployed or local). The MCP server exposes:
 
 #### 5.1 Gmail MCP client integration (`pulse/agent/mcp_client.py`)
 
-Connect to the external MCP server. The MCP server exposes:
+Connect to the external MCP server deployed at `https://map-server-abhishek-production.up.railway.app`. The server exposes:
 
 | Endpoint | Method | Purpose |
 | -------- | ------ | ------- |
