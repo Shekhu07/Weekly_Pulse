@@ -436,7 +436,7 @@ Heading 1: Groww — Weekly Review Pulse — 2026-W23
 ```
 
 - Input: `PulseReport`, `RunContext`
-- Output: structured data (dict/list of blocks) ready for Docs MCP, **not** raw HTML
+- Output: formatted plain-text content ready for Docs MCP append
 - Section anchor key: `{product}-{iso_week}` (e.g. `groww-2026-W23`)
 - Heading text: `Groww — Weekly Review Pulse — 2026-W23`
 

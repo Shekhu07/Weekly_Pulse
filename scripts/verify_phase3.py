@@ -91,20 +91,8 @@ def main():
     print("=" * 70)
     print(f"  anchor      : {doc.anchor}")
     print(f"  heading_text: {doc.heading_text}")
-    print(f"  blocks      : {len(doc.blocks)} total")
-    print()
-    for block in doc.blocks:
-        btype = block["type"]
-        if btype == "divider":
-            print("  ──────────────────────────────────────")
-        elif btype == "heading1":
-            print(f"\n  # {block['text']}")
-        elif btype == "heading2":
-            print(f"\n  ## {block['text']}")
-        elif btype == "paragraph":
-            print(f"  {block['text']}")
-        elif btype == "bullet":
-            print(f"  • {block['text']}")
+    print(f"  content length: {len(doc.content)} chars")
+    print("\n" + doc.content)
 
     # ── Phase 3b — EmailTeaser ────────────────────────────────────────────────
     logger.info("Building EmailTeaser…")
@@ -130,7 +118,7 @@ def main():
 
     doc_path = out_dir / "doc_section.json"
     doc_path.write_text(json.dumps(
-        {"anchor": doc.anchor, "heading_text": doc.heading_text, "blocks": doc.blocks},
+        {"anchor": doc.anchor, "heading_text": doc.heading_text, "content": doc.content},
         indent=2,
         ensure_ascii=False,
     ))

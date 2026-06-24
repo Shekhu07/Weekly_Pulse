@@ -94,7 +94,7 @@ class DocSection:
     """Structured content ready for Google Docs MCP append."""
     anchor: str                # e.g. "groww-2026-W23"
     heading_text: str          # e.g. "Groww — Weekly Review Pulse — 2026-W23"
-    blocks: list[dict] = field(default_factory=list)  # Structured content blocks
+    content: str = ""          # Plain text formatted content ready to be appended
 
 
 @dataclass
