@@ -42,21 +42,57 @@ def append_doc_section(doc_section: DocSection, product_config: dict) -> dict:
     doc_id = product_config.get("delivery", {}).get("google_doc_id")
     if not doc_id:
         raise ValueError("google_doc_id not found in product config")
+        
+    doc_url = f"https://docs.google.com/document/d/{doc_id}/edit"
 
-    payload = {
-        "doc_id": doc_id,
-        "content": doc_section.content
-    }
-
+    # Derive anchor text from DocSection. Usually the first line (Heading 1)
+    anchor = ""
+    if doc_section.content:
+        anchor = doc_section.content.split("\n")[0].replace("# ", "").strip()
+        
     last_err = None
     with _get_mcp_client() as client:
+        # Phase 4 Idempotency Check: search the document before appending
+        if anchor:
+            search_payload = {"doc_id": doc_id, "anchor": anchor}
+            for attempt in range(1, _MAX_RETRIES + 1):
+                try:
+                    search_resp = client.post("/search_doc", json=search_payload)
+                    search_resp.raise_for_status()
+                    search_data = search_resp.json()
+                    
+                    if search_data.get("found"):
+                        logger.info(f"Anchor '{anchor}' already exists in the Google Doc. Skipping append.")
+                        return {
+                            "doc_url": doc_url,
+                            "response": {"note": "Already existed, skipped append"}
+                        }
+                    break # Search successful, not found, proceed to append
+                except httpx.HTTPStatusError as e:
+                    if e.response.status_code in (401, 403, 404):
+                        raise RuntimeError(f"Fatal Docs MCP error ({e.response.status_code}): {e.response.text}") from e
+                    last_err = e
+                except httpx.RequestError as e:
+                    last_err = e
+                    
+                logger.warning(f"Docs MCP search failed (attempt {attempt}/{_MAX_RETRIES}): {last_err}")
+                if attempt < _MAX_RETRIES:
+                    time.sleep(_RETRY_DELAY)
+                else:
+                    raise RuntimeError(f"Failed to search Google Doc after {_MAX_RETRIES} attempts. Last error: {last_err}")
+
+        # Append Section
+        payload = {
+            "doc_id": doc_id,
+            "content": doc_section.content
+        }
+
         for attempt in range(1, _MAX_RETRIES + 1):
             try:
                 resp = client.post("/append_to_doc", json=payload)
                 resp.raise_for_status()
                 data = resp.json()
                 
-                doc_url = f"https://docs.google.com/document/d/{doc_id}/edit"
                 logger.info(f"Successfully appended to Google Doc: {doc_url}")
                 
                 return {
