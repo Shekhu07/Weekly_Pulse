@@ -402,6 +402,8 @@ def stratified_sample(cluster_reviews, n=8):
 {
   "theme_name": "App performance & bugs",
   "summary": "Lag and crashes during trading hours; session timeouts.",
+  "sentiment": "NEGATIVE",
+  "teams": ["Android Eng", "Backend Ops"],
   "quotes": ["The app freezes exactly when the market opens..."],
   "action_ideas": [
     {
@@ -562,6 +564,7 @@ Central run ledger (SQLite recommended) owned by the pulse agent, written after 
 | `window_weeks` | int |
 | `started_at`, `completed_at` | timestamps |
 | `error_message` | nullable |
+| `report_json` | TEXT (cached PulseReport JSON for Analytics Dashboard) |
 
 ### Table: `deliveries`
 
