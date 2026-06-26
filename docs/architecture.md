@@ -29,7 +29,7 @@ graph TB
     end
 
     subgraph "This Repository"
-        UI["Streamlit UI / Dashboard"]
+        UI["FastAPI UI / Dashboard"]
         CLI["Pulse CLI / Scheduler"]
         Agent["Pulse Agent<br/>(MCP Host)"]
         Ingest["Play Store Ingestion"]
