@@ -23,6 +23,54 @@ st.set_page_config(
     layout="wide",
 )
 
+# --- GOOGLE STITCH CSS INJECTION ---
+st.markdown("""
+<style>
+/* Glassmorphism for sidebar */
+[data-testid="stSidebar"] {
+    background: rgba(16, 19, 25, 0.6) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Primary Button Styling */
+[data-testid="baseButton-primary"] {
+    background: linear-gradient(135deg, #00D09C 0%, #008F6C 100%) !important;
+    border: none !important;
+    box-shadow: 0px 4px 15px rgba(0, 208, 156, 0.2) !important;
+    transition: all 0.3s ease !important;
+    border-radius: 9999px !important;
+}
+[data-testid="baseButton-primary"]:hover {
+    box-shadow: 0px 0px 20px rgba(0, 208, 156, 0.4) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Inputs & Selectboxes Glassmorphism */
+.stSelectbox div[data-baseweb="select"], .stTextInput input {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 0.75rem !important;
+    color: white !important;
+}
+
+/* Ledger Expander Cards Glassmorphism */
+[data-testid="stExpander"] {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 1rem !important;
+    overflow: hidden !important;
+}
+
+/* Hide Streamlit branding */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+</style>
+""", unsafe_allow_html=True)
+
 # Initialize DB on load
 init_db()
 
@@ -46,7 +94,7 @@ with st.sidebar:
     
     # Delivery Mode
     st.subheader("Delivery Options")
-    email_mode = st.radio("Email Mode", ["draft"], index=0, help="The current MCP server only supports creating drafts.")
+    email_mode = st.radio("Email Mode", ["draft", "send"], index=0, help="'draft' creates a draft, 'send' sends it immediately.")
     
     # Dry Run Toggle
     is_dry_run = st.toggle("Dry Run (Skip MCP Delivery)", value=False)
