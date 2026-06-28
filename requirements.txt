@@ -23,5 +23,6 @@ httpx>=0.27.0
 # Testing
 pytest>=7.4
 
-# UI
-streamlit>=1.35
+# UI (FastAPI Web Server)
+fastapi>=0.100
+uvicorn>=0.23

@@ -72,6 +72,8 @@ class Theme:
     action_ideas: list[ActionIdea] = field(default_factory=list)
     cluster_size: int = 0
     avg_rating: float = 0.0
+    sentiment: str = "MIXED"   # "POSITIVE", "NEGATIVE", "MIXED"
+    teams: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -81,6 +83,8 @@ class PulseReport:
     iso_week: str
     window_weeks: int
     review_count: int
+    rating_distribution: dict[int, int] = field(default_factory=dict)
+    sentiment_distribution: dict[str, int] = field(default_factory=dict)
     themes: list[Theme] = field(default_factory=list)
     generated_at: str = ""     # ISO datetime
 

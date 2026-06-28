@@ -97,6 +97,8 @@ Output schema (strict):
 {
   "theme_name": "short theme label (max 6 words)",
   "summary": "2-3 sentence summary of the theme",
+  "sentiment": "POSITIVE, NEGATIVE, or MIXED",
+  "teams": ["name of relevant team (e.g. Product Management, Android Eng)", ...],
   "quotes": ["verbatim quote from a review", ...],
   "action_ideas": [{"title": "short action", "detail": "1-2 sentence explanation"}, ...]
 }
@@ -104,6 +106,8 @@ Output schema (strict):
 Rules:
 - theme_name: max 6 words, title case
 - summary: 2-3 sentences, factual, no marketing language
+- sentiment: Exactly one of: POSITIVE, NEGATIVE, MIXED
+- teams: 1-3 tags for internal teams that should own this feedback
 - quotes: 1-3 verbatim quotes copied exactly from the reviews provided. Do NOT invent quotes.
 - action_ideas: 1-3 concrete product/engineering actions
 """
@@ -238,6 +242,8 @@ def summarize_cluster(
         action_ideas=action_ideas,
         cluster_size=cluster["size"],
         avg_rating=cluster["avg_rating"],
+        sentiment=raw.get("sentiment", "MIXED").upper(),
+        teams=raw.get("teams", []),
     )
 
 

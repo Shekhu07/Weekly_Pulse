@@ -35,9 +35,15 @@ def init_db() -> None:
                 window_weeks INTEGER DEFAULT 0,
                 started_at TEXT NOT NULL,
                 completed_at TEXT,
-                error_message TEXT
+                error_message TEXT,
+                report_json TEXT
             )
         """)
+        # Schema migration: add report_json if it doesn't exist
+        try:
+            conn.execute("ALTER TABLE runs ADD COLUMN report_json TEXT")
+        except sqlite3.OperationalError:
+            pass
         conn.execute("""
             CREATE TABLE IF NOT EXISTS deliveries (
                 run_id TEXT NOT NULL,
@@ -77,17 +83,17 @@ def start_run(product: str, iso_week: str, window_weeks: int) -> str:
     return run_id
 
 
-def complete_run(run_id: str, review_count: int) -> None:
+def complete_run(run_id: str, review_count: int, report_json: str | None = None) -> None:
     """Mark a run as successfully completed."""
     now = datetime.now(timezone.utc).isoformat()
     with sqlite3.connect(_get_db_path()) as conn:
         conn.execute(
             """
             UPDATE runs 
-            SET status = 'completed', review_count = ?, completed_at = ?
+            SET status = 'completed', review_count = ?, completed_at = ?, report_json = ?
             WHERE run_id = ?
             """,
-            (review_count, now, run_id)
+            (review_count, now, report_json, run_id)
         )
 
 
@@ -124,6 +130,20 @@ def check_run_completed(product: str, iso_week: str) -> dict[str, Any] | None:
         return dict(row) if row else None
 
 
+def get_report(product: str, iso_week: str) -> str | None:
+    """Fetch the saved JSON report for a specific run."""
+    with sqlite3.connect(_get_db_path()) as conn:
+        cur = conn.execute(
+            """
+            SELECT report_json FROM runs 
+            WHERE product = ? AND iso_week = ? AND status = 'completed'
+            """,
+            (product, iso_week)
+        )
+        row = cur.fetchone()
+        return row[0] if row else None
+
+
 def record_delivery(
     run_id: str,
     channel: str,
@@ -141,6 +161,24 @@ def record_delivery(
             """,
             (run_id, channel, external_id, url, idempotency_key, now)
         )
+
+def get_runs(limit: int = 20) -> list[tuple]:
+    """Retrieve recent runs from the ledger.
+    
+    Returns:
+        List of run tuples ordered by started_at descending.
+    """
+    with sqlite3.connect(_get_db_path()) as conn:
+        cur = conn.execute(
+            """
+            SELECT run_id, product, iso_week, status, review_count, window_weeks, started_at, completed_at, error_message
+            FROM runs
+            ORDER BY started_at DESC
+            LIMIT ?
+            """,
+            (limit,)
+        )
+        return cur.fetchall()
 
 
 def check_delivery_exists(idempotency_key: str) -> dict[str, Any] | None:

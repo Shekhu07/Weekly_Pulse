@@ -8,6 +8,7 @@ from __future__ import annotations
 import logging
 import json
 from pathlib import Path
+from dataclasses import asdict
 
 from pulse.agent.mcp_client import append_doc_section, send_email_teaser
 from pulse.ingestion.models import RunContext, Review
@@ -124,7 +125,8 @@ def execute_run(run_context: RunContext, product_config: dict, pipeline_config: 
             logger.info("Dry run: skipping Email delivery")
 
         # 7. Complete run
-        complete_run(run_id, review_count=report.review_count)
+        report_json = json.dumps(asdict(report))
+        complete_run(run_id, review_count=report.review_count, report_json=report_json)
         logger.info(f"Run {run_id} completed successfully")
         
         return {

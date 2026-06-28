@@ -75,11 +75,26 @@ def analyze(
         validated = validate_quotes(theme, cluster_reviews_list, scrubbed)
         validated_themes.append(validated)
 
+    # Calculate distributions for dashboard
+    rating_distribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+    sentiment_distribution = {"Positive": 0, "Neutral": 0, "Negative": 0}
+    
+    for r in scrubbed:
+        rating_distribution[r.rating] += 1
+        if r.rating >= 4:
+            sentiment_distribution["Positive"] += 1
+        elif r.rating == 3:
+            sentiment_distribution["Neutral"] += 1
+        else:
+            sentiment_distribution["Negative"] += 1
+
     report = PulseReport(
         product=run_context.product,
         iso_week=run_context.iso_week,
         window_weeks=run_context.window_weeks,
         review_count=len(scrubbed),
+        rating_distribution=rating_distribution,
+        sentiment_distribution=sentiment_distribution,
         themes=validated_themes,
         generated_at=datetime.now(timezone.utc).isoformat(),
     )
