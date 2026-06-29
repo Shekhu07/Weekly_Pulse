@@ -13,8 +13,16 @@ Automated weekly insights from public App Store and Google Play reviews for fint
 ## Current Scope
 
 - **Product:** Groww
-- **Source:** Google Play Store
+- **Source:** Google Play Store (Live Scraper)
 - **Delivery:** Google Docs MCP + Gmail MCP
+- **AI Architecture:** `sentence-transformers` (Local Embeddings) + `Groq API` (Llama-3 Summarization)
+
+## ☁️ Cloud Deployment (Hugging Face Spaces)
+
+This project is optimized for a 100% free deployment on **Hugging Face Spaces** using the Docker SDK.
+1. Create a **Blank Docker** space on Hugging Face (CPU basic - 16GB RAM).
+2. Add your secrets (`GROQ_API_KEY`, `MCP_SERVER_URL`).
+3. Push this repository to your space. The Docker container will automatically expose the FastAPI dashboard on port 7860.
 
 ## Quick Start
 
@@ -75,6 +83,7 @@ python -m pulse.cli status --product groww --iso-week 2026-W23
 
 ## Documentation
 
+- [AI PM Interview Script](script.md) *(Talking points & tech stack)*
 - [Problem Statement](docs/problemStatement.md)
 - [Architecture](docs/architecture.md)
 - [Implementation Plan](docs/implementation-plan.md)
