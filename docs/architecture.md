@@ -43,7 +43,7 @@ graph TB
     subgraph External
         PlayStore["Google Play Store"]
         Groq["Groq API<br/>llama-3.3-70b-versatile"]
-        OpenAI["OpenAI Embeddings API"]
+        SentenceTransformers["sentence-transformers<br/>BAAI/bge-small-en-v1.5"]
         DocsAPI["Google Docs API"]
         GmailAPI["Gmail API"]
     end
@@ -62,7 +62,7 @@ graph TB
 
     Ingest --> PlayStore
     Pipeline --> Groq
-    Pipeline --> OpenAI
+    Pipeline --> SentenceTransformers
 
     Agent -- "stdio" --> DocsMCP
     Agent -- "stdio" --> GmailMCP
@@ -146,7 +146,7 @@ Weekly Pulse/
 │   │   └── models.py             # Review, RawReview, RunContext
 │   ├── pipeline/
 │   │   ├── scrubber.py           # PII redaction
-│   │   ├── embeddings.py         # OpenAI text-embedding-3-small
+│   │   ├── embeddings.py         # local sentence-transformers (BAAI/bge-small-en-v1.5)
 │   │   ├── clustering.py         # UMAP + HDBSCAN
 │   │   ├── summarizer.py         # LLM theme/quote/action generation
 │   │   └── quote_validator.py    # Substring match against source reviews
@@ -319,7 +319,7 @@ Scrubbed text is used for embedding, LLM prompts, Doc output, and quote validati
 flowchart TD
     A["Script-filtered + scrubbed reviews<br/>(text + rating)"] --> B{"count ≥ 20?"}
     B -- "no" --> C["Abort run"]
-    B -- "yes" --> D["OpenAI text-embedding-3-small<br/>batch encode"]
+    B -- "yes" --> D["sentence-transformers BAAI/bge-small<br/>batch encode"]
     D --> E["UMAP<br/>random_state=42"]
     E --> F["HDBSCAN<br/>min_cluster_size=5"]
     F --> G["Rank: score = size × (6 − avg_rating)"]
@@ -332,7 +332,7 @@ flowchart TD
 
 | Parameter | Typical Default | Config Key |
 | --------- | --------------- | ---------- |
-| Embedding provider / model | OpenAI / `text-embedding-3-small` | `pipeline.embedding.*` |
+| Embedding provider / model | sentence-transformers / `BAAI/bge-small-en-v1.5` | `pipeline.embedding.*` |
 | Embedding cache key | `sha256(scrubbed_text + rating)` | until `review_id` exists on `Review` |
 | UMAP `n_neighbors` | 15 | `pipeline.clustering.umap.n_neighbors` |
 | UMAP `n_components` | 5 | `pipeline.clustering.umap.n_components` |
@@ -355,7 +355,7 @@ flowchart TD
 
 ### 7.3 LLM Summarization (Groq)
 
-**Provider:** Groq — `llama-3.3-70b-versatile`. Embeddings remain on OpenAI; only summarization uses Groq (`GROQ_API_KEY`).
+**Provider:** Groq — `llama-3.3-70b-versatile`. Embeddings remain purely local via `sentence-transformers`; only summarization uses Groq (`GROQ_API_KEY`).
 
 **Call pattern:** One Groq request per top cluster (not one mega-prompt). Sequential calls with ≥ 2s interval — no parallel LLM requests.
 
@@ -608,8 +608,8 @@ delivery:
 
 ```yaml
 embedding:
-  provider: openai
-  model: text-embedding-3-small
+  provider: sentence-transformers
+  model: BAAI/bge-small-en-v1.5
   batch_size: 64
 clustering:
   umap:
@@ -632,7 +632,7 @@ safety:
   max_review_chars: 2000
 ```
 
-Environment-specific overrides via env vars (e.g. `PULSE_EMAIL_MODE=send`, `GROQ_API_KEY` for summarization, OpenAI key for embeddings).
+Environment-specific overrides via env vars (e.g. `PULSE_EMAIL_MODE=send`, `GROQ_API_KEY` for summarization, `MCP_SERVER_URL` for MCP host).
 
 ---
 
@@ -745,7 +745,7 @@ Architectural extension points already implied by the design:
 | Dominant-cluster threshold | 60% (mandatory split) | Lowered from 80%: Groww's 1★ skew creates a large complaint cluster that would obscure distinct sub-themes at 80% |
 | LLM sample selection | 8 reviews, rating-stratified per cluster | Clusters of 100–140 reviews; stratification ensures LLM sees full sentiment range at no extra token cost |
 | Summarization LLM | Groq `llama-3.3-70b-versatile` | Cost-effective; ~1,700 tokens/call, ~8,500/run — well within 12K TPM and 100K TPD limits |
-| Embeddings | OpenAI `text-embedding-3-small` | Separate from Groq; batch-friendly for ~1,000+ reviews |
+| Embeddings | `sentence-transformers` BAAI/bge-small | Fully local, zero API cost, batch-friendly for ~1,000+ reviews |
 | Quote ellipsis rule | ≥ 15-char prefix required | Reviewers use trailing `....` as punctuation; short-prefix match causes false-positives |
 | Quote trust | Post-LLM substring validation against scrubbed text | Prevents fabricated user voice |
 | Idempotency | Anchor + email key + ledger | Safe weekly cron and backfill |

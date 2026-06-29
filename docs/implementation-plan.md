@@ -122,8 +122,8 @@ delivery:
 **`config/pipeline.yaml`**
 ```yaml
 embedding:
-  provider: openai
-  model: text-embedding-3-small
+  provider: sentence-transformers
+  model: BAAI/bge-small-en-v1.5
   batch_size: 64
 clustering:
   umap:
@@ -173,7 +173,7 @@ class RunContext:
 #### 0.4 Dev environment
 
 - `requirements.txt` with all dependencies (initially: `pyyaml`, `click`, `python-dotenv`)
-- `.env.example` with placeholder keys (`GROQ_API_KEY`, `OPENAI_API_KEY`)
+- `.env.example` with placeholder keys (`GROQ_API_KEY`, `MCP_SERVER_URL`)
 - `.gitignore` covering `data/`, `.env`, `token.json`, `credentials.json`, `__pycache__/`
 - CLI stub: `python -m pulse.cli --help` prints usage
 
@@ -283,7 +283,7 @@ def is_latin_dominant(text: str) -> bool:
 
 #### 2b. Embeddings (`pulse/pipeline/embeddings.py`)
 
-- **Provider:** OpenAI `text-embedding-3-small`
+- **Provider:** `sentence-transformers` (local BAAI/bge-small-en-v1.5)
 - Batch encode scrubbed review texts (batch_size from config, default 64)
 - Return: `numpy.ndarray` of shape `(n_reviews, embedding_dim)`
 - Cache embeddings by `sha256(scrubbed_text + rating)` to avoid re-encoding on retries
@@ -400,7 +400,7 @@ class PulseReport:
 
 - [ ] Script filter drops Devanagari reviews; Hinglish reviews pass through
 - [ ] PII scrubber redacts test emails, phones, IDs correctly
-- [ ] Embeddings generated for ~1,000+ reviews in batches without exceeding OpenAI limits
+- [ ] Embeddings generated for ~1,000+ reviews in batches purely locally (zero API cost)
 - [ ] UMAP + HDBSCAN produces 3–5 meaningful clusters; dominant-cluster split triggers at ≥ 60%
 - [ ] Groq returns valid JSON themes per cluster; daily token log shows < 12,000 tokens/run
 - [ ] All quotes in final report pass substring validation (no ellipsis false-positives)
@@ -638,7 +638,7 @@ Using `click`:
 - Default ISO week: current week or previous complete week
 - Load product config from `config/products/{product}.yaml`
 - Load pipeline config from `config/pipeline.yaml`
-- Environment variables for secrets (`GROQ_API_KEY`, `OPENAI_API_KEY`)
+- Environment variables for secrets (`GROQ_API_KEY`, `MCP_SERVER_URL`)
 
 #### 6.4 Structured logging
 
@@ -762,7 +762,7 @@ graph TD
 | UI Framework | Streamlit |
 | CLI | Click |
 | Play Store scraping | `google-play-scraper` |
-| Embeddings | OpenAI `text-embedding-3-small` |
+| Embeddings | `sentence-transformers` BAAI/bge-small |
 | Dimensionality reduction | UMAP |
 | Clustering | HDBSCAN |
 | LLM summarization | Groq `llama-3.3-70b-versatile` |
@@ -799,7 +799,6 @@ streamlit
 | Variable | Required | Used By |
 | -------- | -------- | ------- |
 | `GROQ_API_KEY` | Yes | Phase 2 (summarizer) |
-| `OPENAI_API_KEY` | Yes | Phase 2 (embeddings) |
 | `MCP_SERVER_URL` | Yes | Phase 4, 5 (MCP delivery) |
 | `PULSE_EMAIL_MODE` | No | Override email mode (draft/send) |
 | `PULSE_DRY_RUN` | No | Override dry-run flag |
