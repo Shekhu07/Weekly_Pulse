@@ -1,3 +1,11 @@
+---
+title: Weekly Pulse
+emoji: 📈
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+---
 # Weekly Product Review Pulse
 
 Automated weekly insights from public App Store and Google Play reviews for fintech products, delivered as a one-page Google Doc report with email notifications via MCP.
@@ -77,7 +85,6 @@ python -m pulse.cli status --product groww --iso-week 2026-W23
 | Variable | Required | Description |
 | -------- | -------- | ----------- |
 | `GROQ_API_KEY` | Yes | Groq API key for LLM summarization |
-| `OPENAI_API_KEY` | Yes | OpenAI API key for embeddings |
 | `MCP_SERVER_URL` | Yes | MCP server base URL |
 
 ## License
