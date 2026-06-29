@@ -65,22 +65,12 @@ def execute_run(run_context: RunContext, product_config: dict, pipeline_config: 
     try:
         # 2. Ingest
         logger.info("Phase 1: Ingestion")
-        try:
-            fetch_reviews(product_config, run_context)
-        except NotImplementedError:
-            # fetch_reviews is a stub for Phase 1. 
-            # Use cached normalized reviews for testing.
-            pass
-            
-        cache_path = Path(f"data/cache/{run_context.product}")
-        latest_cache = sorted(cache_path.iterdir(), reverse=True)[0] if cache_path.exists() else None
-        if not latest_cache:
-            raise RuntimeError("No cached reviews found. Please run ingestion first.")
-            
-        norm_path = latest_cache / "reviews_normalized.json"
-        with open(norm_path) as f:
-            raw_json = json.load(f)
-            reviews = [Review(text=r["text"], rating=r["rating"]) for r in raw_json]
+        from pulse.ingestion.normalizer import normalize_reviews
+        from pulse.ingestion.cache import save_to_cache
+        
+        raw_reviews = fetch_reviews(product_config, run_context)
+        reviews = normalize_reviews(raw_reviews, product_config)
+        save_to_cache(run_context.product, raw_reviews, reviews, run_context.window_weeks)
 
         if not reviews:
             raise ValueError("No reviews fetched")
