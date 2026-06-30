@@ -737,7 +737,8 @@ graph TD
     P5["Phase 5<br/>Gmail MCP"]
     P6["Phase 6<br/>Orchestrator/CLI/Ledger"]
     P7["Phase 7<br/>Testing/Polish"]
-    P8["Phase 8<br/>Streamlit UI"]
+    P8["Phase 8<br/>FastAPI UI"]
+    P9["Phase 9<br/>Analytics Dashboard"]
 
     P0 --> P1
     P1 --> P2
@@ -748,6 +749,7 @@ graph TD
     P5 --> P6
     P6 --> P7
     P7 --> P8
+    P8 --> P9
 ```
 
 > **Note:** Phases 4 and 5 can be developed in parallel once Phase 3 is complete.
@@ -759,7 +761,7 @@ graph TD
 | Component | Technology |
 | --------- | ---------- |
 | Language | Python 3.11+ |
-| UI Framework | Streamlit |
+| UI Framework | FastAPI + HTML/Tailwind |
 | CLI | Click |
 | Play Store scraping | `google-play-scraper` |
 | Embeddings | `sentence-transformers` BAAI/bge-small |
@@ -782,14 +784,15 @@ click
 pyyaml
 python-dotenv
 google-play-scraper
-openai
 groq
 umap-learn
 hdbscan
 numpy
 requests
 pytest
-streamlit
+fastapi
+uvicorn
+pydantic
 ```
 
 ---

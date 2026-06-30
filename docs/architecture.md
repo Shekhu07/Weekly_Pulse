@@ -727,7 +727,6 @@ Architectural extension points already implied by the design:
 | Additional products | New `config/products/*.yaml`; reuse pipeline + MCP |
 | App Store RSS | New `ingestion/app_store.py` implementing `ReviewSource` |
 | Multi-source merge | Fan-in before embed step; `source` dimension on `Review` |
-| BI dashboard | Read from ledger + exported JSON; Doc remains canonical |
 | Richer MCP | Additional tools only if pulse needs them; avoid generic Workspace scope |
 
 ---

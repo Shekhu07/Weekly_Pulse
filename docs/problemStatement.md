@@ -49,7 +49,7 @@ Give product, support, and leadership teams a **repeatable, weekly snapshot** of
 ## Non-Goals (Explicit)
 
 - A generic Google Workspace product beyond what the pulse needs (Docs append + Gmail send/draft).
-- Real-time streaming analytics or a BI dashboard (the running Google Doc is the living artifact).
+- Real-time streaming analytics (batch analytics via the web dashboard are supported, but the Google Doc remains the primary artifact).
 - Social sources (Twitter, Reddit, etc.) in the initial scope.
 - Storing Google OAuth secrets in the agent codebase — they belong in the MCP servers' configuration, per architecture.
 - Apple App Store ingestion in v1.
