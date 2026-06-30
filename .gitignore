@@ -1,6 +1,7 @@
 # Personal / private files
 script.md
 docs/problemStatement.txt
+mcp_config.json
 
 # Data & cache
 data/

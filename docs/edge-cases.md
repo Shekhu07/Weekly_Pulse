@@ -1,6 +1,6 @@
 # Weekly Product Review Pulse — Edge Cases
 
-Comprehensive catalog of corner cases, failure modes, and their handling across all system layers. Referenced by [architecture.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/architecture.md) and [implementation-plan.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/implementation-plan.md).
+Comprehensive catalog of corner cases, failure modes, and their handling across all system layers. Referenced by [architecture.md](architecture.md) and [implementation-plan.md](implementation-plan.md).
 
 > **Notation:** Each edge case has a severity tag — 🔴 **Critical** (blocks run), 🟡 **Degraded** (partial output), 🟢 **Graceful** (handled silently).
 
@@ -717,6 +717,6 @@ Comprehensive catalog of corner cases, failure modes, and their handling across 
 
 ## Related Documents
 
-- [problemStatement.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/problemStatement.md) — Product intent, requirements, and non-goals
-- [architecture.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/architecture.md) — Technical architecture, data flows, MCP integration
-- [implementation-plan.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/implementation-plan.md) — Phase-wise build plan and exit criteria
+- [problemStatement.md](problemStatement.md) — Product intent, requirements, and non-goals
+- [architecture.md](architecture.md) — Technical architecture, data flows, MCP integration
+- [implementation-plan.md](implementation-plan.md) — Phase-wise build plan and exit criteria

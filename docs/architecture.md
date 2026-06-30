@@ -1,6 +1,6 @@
 # Weekly Product Review Pulse — Architecture
 
-This document describes the technical architecture for the Groww Play Store review pulse: components, data flows, MCP integration, idempotency, and operational concerns. It extends [problemStatement.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/problemStatement.md).
+This document describes the technical architecture for the Groww Play Store review pulse: components, data flows, MCP integration, idempotency, and operational concerns. It extends [problemStatement.md](problemStatement.md).
 
 ---
 
@@ -345,7 +345,7 @@ flowchart TD
 
 **Noise cluster** (label = −1) reviews are excluded from theme generation unless volume exceeds a configurable threshold.
 
-**Clustering fallbacks** (see [edge-cases.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/edge-cases.md) §3):
+**Clustering fallbacks** (see [edge-cases.md](edge-cases.md) §3):
 
 | Condition | Behavior |
 | --------- | -------- |
@@ -491,7 +491,7 @@ Email body is intentionally short:
 
 ## 9. MCP Server Architecture
 
-Both services (Docs and Gmail) are provided by a deployed MCP-style server hosted at `map-server-abhishek-production.up.railway.app`. The pulse agent communicates with it via REST/HTTP endpoints.
+Both services (Docs and Gmail) are provided by a deployed MCP-style server (configured via `MCP_SERVER_URL`). The pulse agent communicates with it via REST/HTTP endpoints.
 
 ```mermaid
 graph LR
@@ -540,7 +540,7 @@ graph LR
 
 The agent:
 
-1. Configures the remote server URL: `https://map-server-abhishek-production.up.railway.app`.
+1. Configures the remote server URL from the `MCP_SERVER_URL` environment variable.
 2. Connects over HTTP POST using `httpx`.
 3. Calls endpoints in order during the delivery phase.
 4. **Never imports Google API client libraries for delivery.**
@@ -755,6 +755,6 @@ Architectural extension points already implied by the design:
 
 ## 20. Related Documents
 
-- [problemStatement.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/problemStatement.md) — Product intent, requirements, and non-goals
-- [implementation-plan.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/implementation-plan.md) — Phase-wise build plan and exit criteria
-- [edge-cases.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/edge-cases.md) — Clustering fallbacks, quote validation, and failure modes
+- [problemStatement.md](problemStatement.md) — Product intent, requirements, and non-goals
+- [implementation-plan.md](implementation-plan.md) — Phase-wise build plan and exit criteria
+- [edge-cases.md](edge-cases.md) — Clustering fallbacks, quote validation, and failure modes

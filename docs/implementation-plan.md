@@ -1,6 +1,6 @@
 # Weekly Product Review Pulse — Implementation Plan
 
-Phase-wise build plan for the Groww Play Store review pulse system. Derived from [problemStatement.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/problemStatement.md) and [architecture.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/architecture.md).
+Phase-wise build plan for the Groww Play Store review pulse system. Derived from [problemStatement.md](problemStatement.md) and [architecture.md](architecture.md).
 
 > **Scope:** Groww · Google Play Store · Google Docs MCP + Gmail MCP
 
@@ -49,7 +49,7 @@ gantt
 
 #### 0.1 Repository structure
 
-Create the directory layout from [architecture.md §4](file:///Users/abhishekspillai/Weekly%20Pulse/docs/architecture.md):
+Create the directory layout from [architecture.md §4](architecture.md):
 
 ```
 Weekly Pulse/
@@ -187,7 +187,7 @@ class RunContext:
 
 ## Phase 1 — Play Store Ingestion
 
-**Goal:** Fetch, normalize, and cache Groww Play Store reviews. Per [architecture.md §6](file:///Users/abhishekspillai/Weekly%20Pulse/docs/architecture.md).
+**Goal:** Fetch, normalize, and cache Groww Play Store reviews. Per [architecture.md §6](architecture.md).
 
 ### Deliverables
 
@@ -246,7 +246,7 @@ data/cache/{product}/{date}/
 
 ## Phase 2 — Analysis Pipeline
 
-**Goal:** Transform normalized reviews into a structured `PulseReport` with themes, validated quotes, and action ideas. Per [architecture.md §7](file:///Users/abhishekspillai/Weekly%20Pulse/docs/architecture.md).
+**Goal:** Transform normalized reviews into a structured `PulseReport` with themes, validated quotes, and action ideas. Per [architecture.md §7](architecture.md).
 
 ### Deliverables
 
@@ -410,7 +410,7 @@ class PulseReport:
 
 ## Phase 3 — Output Generation
 
-**Goal:** Transform a `PulseReport` into structured blocks for Google Docs and a teaser email. Per [architecture.md §8](file:///Users/abhishekspillai/Weekly%20Pulse/docs/architecture.md).
+**Goal:** Transform a `PulseReport` into structured blocks for Google Docs and a teaser email. Per [architecture.md §8](architecture.md).
 
 ### Deliverables
 
@@ -475,19 +475,19 @@ class EmailTeaser:
 - [ ] `DocSection` renders correct heading, themes, quotes, actions, "who this helps" blocks
 - [ ] `EmailTeaser` produces valid HTML and plain text with theme bullets and CTA placeholder
 - [ ] Anchor key and idempotency key follow `{product}-{iso_week}` convention
-- [ ] Output verified against sample from [problemStatement.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/problemStatement.md)
+- [ ] Output verified against sample from [problemStatement.md](problemStatement.md)
 
 ---
 
 ## Phase 4 — Google Docs MCP Delivery
 
-**Goal:** Append the weekly section to the shared Google Doc via the MCP server. Per [architecture.md §9.1](file:///Users/abhishekspillai/Weekly%20Pulse/docs/architecture.md).
+**Goal:** Append the weekly section to the shared Google Doc via the MCP server. Per [architecture.md §9.1](architecture.md).
 
 ### Deliverables
 
 #### 4.1 Docs MCP client integration (`pulse/agent/mcp_client.py`)
 
-Connect to the external MCP server deployed at `https://map-server-abhishek-production.up.railway.app`. The server exposes:
+Connect to the external MCP server deployed at `<MCP_SERVER_URL>`. The server exposes:
 
 | Endpoint | Method | Purpose |
 | -------- | ------ | ------- |
@@ -526,13 +526,13 @@ Connect to the external MCP server deployed at `https://map-server-abhishek-prod
 
 ## Phase 5 — Gmail MCP Delivery
 
-**Goal:** Send/draft the stakeholder email via the Gmail MCP server. Per [architecture.md §9.2](file:///Users/abhishekspillai/Weekly%20Pulse/docs/architecture.md).
+**Goal:** Send/draft the stakeholder email via the Gmail MCP server. Per [architecture.md §9.2](architecture.md).
 
 ### Deliverables
 
 #### 5.1 Gmail MCP client integration (`pulse/agent/mcp_client.py`)
 
-Connect to the external MCP server deployed at `https://map-server-abhishek-production.up.railway.app`. The server exposes:
+Connect to the external MCP server deployed at `<MCP_SERVER_URL>`. The server exposes:
 
 | Endpoint | Method | Purpose |
 | -------- | ------ | ------- |
@@ -567,7 +567,7 @@ Connect to the external MCP server deployed at `https://map-server-abhishek-prod
 
 ## Phase 6 — Orchestrator, CLI & Ledger
 
-**Goal:** Wire everything together into an end-to-end coordinator with CLI commands and audit ledger. Per [architecture.md §5, §10, §12](file:///Users/abhishekspillai/Weekly%20Pulse/docs/architecture.md).
+**Goal:** Wire everything together into an end-to-end coordinator with CLI commands and audit ledger. Per [architecture.md §5, §10, §12](architecture.md).
 
 ### Deliverables
 
@@ -603,7 +603,7 @@ SQLite database for audit and idempotency:
 
 #### 6.2 Orchestrator (`pulse/agent/orchestrator.py`)
 
-End-to-end run coordinator — the sequence from [architecture.md §5](file:///Users/abhishekspillai/Weekly%20Pulse/docs/architecture.md):
+End-to-end run coordinator — the sequence from [architecture.md §5](architecture.md):
 
 ```
 1. Check ledger idempotency (product, iso_week)
@@ -660,7 +660,7 @@ Using `click`:
 
 ## Phase 7 — Testing & Polish
 
-**Goal:** Validate all components, handle edge cases, and ensure production readiness. Per [architecture.md §17](file:///Users/abhishekspillai/Weekly%20Pulse/docs/architecture.md).
+**Goal:** Validate all components, handle edge cases, and ensure production readiness. Per [architecture.md §17](architecture.md).
 
 ### Deliverables
 
@@ -685,7 +685,7 @@ Using `click`:
 
 #### 7.3 Edge case handling
 
-Per [edge-cases.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/edge-cases.md) (to be created):
+Per [edge-cases.md](edge-cases.md) (to be created):
 
 | Edge Case | Handling |
 | --------- | -------- |
@@ -807,9 +807,9 @@ streamlit
 
 ## Related Documents
 
-- [problemStatement.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/problemStatement.md) — Product intent, requirements, and non-goals
-- [architecture.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/architecture.md) — Technical architecture, data flows, MCP integration
-- [edge-cases.md](file:///Users/abhishekspillai/Weekly%20Pulse/docs/edge-cases.md) — Clustering fallbacks, quote validation, and failure modes (created in Phase 7)
+- [problemStatement.md](problemStatement.md) — Product intent, requirements, and non-goals
+- [architecture.md](architecture.md) — Technical architecture, data flows, MCP integration
+- [edge-cases.md](edge-cases.md) — Clustering fallbacks, quote validation, and failure modes (created in Phase 7)
 
 ---
 

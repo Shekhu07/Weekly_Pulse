@@ -120,6 +120,6 @@ Future candidates (post-v1): INDMoney, PowerUp Money, Wealth Monitor, Kuvera —
 
 ## Related Documents
 
-- [`architecture.md`](file:///Users/abhishekspillai/Weekly%20Pulse/docs/architecture.md) — Technical architecture, data flows, MCP integration, idempotency
-- [`implementation-plan.md`](file:///Users/abhishekspillai/Weekly%20Pulse/docs/implementation-plan.md) — Phase-wise build plan and exit criteria
-- [`edge-cases.md`](file:///Users/abhishekspillai/Weekly%20Pulse/docs/edge-cases.md) — Clustering fallbacks, quote validation, and failure modes
+- [`architecture.md`](architecture.md) — Technical architecture, data flows, MCP integration, idempotency
+- [`implementation-plan.md`](implementation-plan.md) — Phase-wise build plan and exit criteria
+- [`edge-cases.md`](edge-cases.md) — Clustering fallbacks, quote validation, and failure modes
