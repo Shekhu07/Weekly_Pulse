@@ -83,7 +83,6 @@ python -m pulse.cli status --product groww --iso-week 2026-W23
 
 ## Documentation
 
-- [AI PM Interview Script](script.md) *(Talking points & tech stack)*
 - [Problem Statement](docs/problemStatement.md)
 - [Architecture](docs/architecture.md)
 - [Implementation Plan](docs/implementation-plan.md)

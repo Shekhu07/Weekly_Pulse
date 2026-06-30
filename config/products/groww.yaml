@@ -9,7 +9,7 @@ ingestion:
   min_words: 8
   allowed_language: en
 delivery:
-  google_doc_id: "1m3VgAibxL6ZCa-4IKsEwRds3_l1cWxHaA-ohbs74w2s"
+  google_doc_id: "your_google_doc_id_here"
   email:
     recipients:
       - product-leads@example.com
