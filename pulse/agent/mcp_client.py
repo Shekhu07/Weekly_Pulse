@@ -40,8 +40,12 @@ def append_doc_section(doc_section: DocSection, product_config: dict) -> dict:
         Dict with doc_url, heading_id, revision_id.
     """
     doc_id = product_config.get("delivery", {}).get("google_doc_id")
+    # Fall back to env var if YAML has a placeholder or is missing
+    if not doc_id or doc_id == "your_google_doc_id_here":
+        from pulse.config import get_env_var
+        doc_id = get_env_var("GOOGLE_DOC_ID", required=False)
     if not doc_id:
-        raise ValueError("google_doc_id not found in product config")
+        raise ValueError("google_doc_id not found in product config or GOOGLE_DOC_ID env var")
         
     doc_url = f"https://docs.google.com/document/d/{doc_id}/edit"
 
