@@ -106,11 +106,21 @@ def append_doc_section(doc_section: DocSection, product_config: dict) -> dict:
                 if e.response.status_code in (401, 403, 404):
                     # Fatal errors (auth, not found)
                     raise RuntimeError(f"Fatal Docs MCP error ({e.response.status_code}): {e.response.text}") from e
+                # Log the server's response body for debugging 500s
+                server_body = ""
+                try:
+                    server_body = e.response.text[:500]
+                except Exception:
+                    pass
+                logger.warning(
+                    f"Docs MCP append failed (attempt {attempt}/{_MAX_RETRIES}): "
+                    f"status={e.response.status_code} body={server_body}"
+                )
                 last_err = e
             except httpx.RequestError as e:
                 last_err = e
+                logger.warning(f"Docs MCP append failed (attempt {attempt}/{_MAX_RETRIES}): {last_err}")
                 
-            logger.warning(f"Docs MCP append failed (attempt {attempt}/{_MAX_RETRIES}): {last_err}")
             if attempt < _MAX_RETRIES:
                 time.sleep(_RETRY_DELAY)
                 

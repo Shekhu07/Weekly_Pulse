@@ -67,17 +67,27 @@ def build_doc_section(report: PulseReport, run_context: RunContext) -> DocSectio
     lines.append(period_line)
     lines.append("")
 
-    def _escape(text: str) -> str:
+    def _sanitize(text: str) -> str:
+        """Clean text for plain-text Google Doc append.
+
+        Strips control characters (which break Google Docs API) and
+        collapses embedded newlines into spaces. Does NOT HTML-encode
+        because the MCP server sends plain text, not HTML.
+        """
         if not text:
             return ""
-        return text.replace("\n", " ").replace("\r", "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        # Replace newlines/carriage returns with spaces
+        text = text.replace("\r\n", " ").replace("\n", " ").replace("\r", " ")
+        # Strip control characters (U+0000–U+001F) except space/tab
+        text = "".join(ch for ch in text if ch == "\t" or ch >= " ")
+        return text.strip()
 
     # ── Top themes ────────────────────────────────────────────────────────────
     lines.append("Top themes")
     lines.append("-" * 10)
     if report.themes:
         for theme in report.themes:
-            lines.append(f"• {_escape(theme.theme_name)} — {_escape(theme.summary)}")
+            lines.append(f"• {_sanitize(theme.theme_name)} — {_sanitize(theme.summary)}")
     else:
         lines.append("• No themes identified.")
     lines.append("")
@@ -88,7 +98,7 @@ def build_doc_section(report: PulseReport, run_context: RunContext) -> DocSectio
     all_quotes = [q for theme in report.themes for q in theme.quotes]
     if all_quotes:
         for quote in all_quotes:
-            lines.append(f"• \"{_escape(quote)}\"")
+            lines.append(f"• \"{_sanitize(quote)}\"")
     else:
         lines.append("• No validated quotes available.")
     lines.append("")
@@ -99,7 +109,7 @@ def build_doc_section(report: PulseReport, run_context: RunContext) -> DocSectio
     all_actions = [a for theme in report.themes for a in theme.action_ideas]
     if all_actions:
         for action in all_actions:
-            lines.append(f"• {_escape(action.title)} — {_escape(action.detail)}")
+            lines.append(f"• {_sanitize(action.title)} — {_sanitize(action.detail)}")
     else:
         lines.append("• No action ideas available.")
     lines.append("")
