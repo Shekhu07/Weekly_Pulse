@@ -12,8 +12,13 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Prevent loky (used by UMAP/joblib) from over-allocating threads on HF Spaces.
+# This replaces the old eager `import umap` approach in api.py.
+ENV LOKY_MAX_CPU_COUNT=2
+
 # Copy application code
 COPY . .
+
 
 # Initialize SQLite DB
 RUN python -c "from pulse.ledger.db import init_db; init_db()"

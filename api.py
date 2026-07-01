@@ -5,8 +5,6 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-import umap  # noqa: F401 - Pre-load to avoid loky threading errors
-
 from pulse.config import load_product_config, load_pipeline_config
 from pulse.ingestion.models import RunContext
 from pulse.ledger.db import init_db, get_runs, get_report
@@ -17,6 +15,16 @@ env_path = Path(__file__).parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
 init_db()
+
+# Pre-load the embedding model at startup so the first pipeline run is fast.
+# This replaces the old eager `import umap` approach — the loky threading
+# issue is now handled via LOKY_MAX_CPU_COUNT env var in the Dockerfile.
+try:
+    from pulse.pipeline.embeddings import preload_model
+    preload_model()
+except Exception:
+    pass  # Non-fatal: model will load on first pipeline run instead
+
 
 app = FastAPI(title="Weekly Pulse API")
 

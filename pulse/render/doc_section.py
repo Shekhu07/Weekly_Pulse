@@ -67,12 +67,17 @@ def build_doc_section(report: PulseReport, run_context: RunContext) -> DocSectio
     lines.append(period_line)
     lines.append("")
 
+    def _escape(text: str) -> str:
+        if not text:
+            return ""
+        return text.replace("\n", " ").replace("\r", "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
     # ── Top themes ────────────────────────────────────────────────────────────
     lines.append("Top themes")
     lines.append("-" * 10)
     if report.themes:
         for theme in report.themes:
-            lines.append(f"• {theme.theme_name} — {theme.summary}")
+            lines.append(f"• {_escape(theme.theme_name)} — {_escape(theme.summary)}")
     else:
         lines.append("• No themes identified.")
     lines.append("")
@@ -83,7 +88,7 @@ def build_doc_section(report: PulseReport, run_context: RunContext) -> DocSectio
     all_quotes = [q for theme in report.themes for q in theme.quotes]
     if all_quotes:
         for quote in all_quotes:
-            lines.append(f"• \"{quote}\"")
+            lines.append(f"• \"{_escape(quote)}\"")
     else:
         lines.append("• No validated quotes available.")
     lines.append("")
@@ -94,7 +99,7 @@ def build_doc_section(report: PulseReport, run_context: RunContext) -> DocSectio
     all_actions = [a for theme in report.themes for a in theme.action_ideas]
     if all_actions:
         for action in all_actions:
-            lines.append(f"• {action.title} — {action.detail}")
+            lines.append(f"• {_escape(action.title)} — {_escape(action.detail)}")
     else:
         lines.append("• No action ideas available.")
     lines.append("")

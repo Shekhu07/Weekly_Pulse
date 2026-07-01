@@ -4,8 +4,9 @@ Generates vector embeddings for scrubbed review texts using
 a local sentence-transformers model (BAAI/bge-small-en-v1.5).
 No API key required — model is downloaded once to HuggingFace cache.
 
-Cache: per-review disk cache keyed by sha256(text + rating) at
-data/embeddings_cache/ to avoid re-encoding on pipeline retries.
+Cache: Batched disk cache stored in a single JSON file at
+data/embeddings_cache/cache.json, keyed by sha256(text + rating).
+This avoids hundreds of individual file I/O operations per run.
 
 Model: BAAI/bge-small-en-v1.5
   - 384-dim vectors
@@ -28,36 +29,72 @@ from pulse.ingestion.models import Review
 logger = logging.getLogger(__name__)
 
 _CACHE_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "embeddings_cache"
+_CACHE_FILE = _CACHE_DIR / "cache.json"
+
+# ---------------------------------------------------------------------------
+# Singleton model cache — load once, reuse across runs
+# ---------------------------------------------------------------------------
+
+_model_instance = None
+_model_name_loaded: str | None = None
 
 
-def _cache_path(key: str) -> Path:
-    return _CACHE_DIR / f"{key}.json"
+def _get_model(model_name: str):
+    """Get or create a cached SentenceTransformer instance."""
+    global _model_instance, _model_name_loaded
+    if _model_instance is None or _model_name_loaded != model_name:
+        from sentence_transformers import SentenceTransformer
+        logger.info(f"Loading model {model_name!r} (one-time, cached for future runs)...")
+        _model_instance = SentenceTransformer(model_name)
+        _model_name_loaded = model_name
+    return _model_instance
 
+
+def preload_model(model_name: str = "BAAI/bge-small-en-v1.5") -> None:
+    """Pre-load the embedding model at app startup (non-blocking warm-up).
+
+    Call this during server initialization so the first pipeline run
+    doesn't pay the cold-load penalty (~10-30s on HF Spaces).
+    """
+    _get_model(model_name)
+    logger.info("Embedding model pre-loaded and ready.")
+
+
+# ---------------------------------------------------------------------------
+# Batched disk cache — single file instead of per-review files
+# ---------------------------------------------------------------------------
 
 def _review_key(review: Review) -> str:
     return hashlib.sha256(f"{review.text}{review.rating}".encode()).hexdigest()
 
 
-def _load_cached(key: str) -> list[float] | None:
-    path = _cache_path(key)
-    if path.exists():
+def _load_cache() -> dict[str, list[float]]:
+    """Load the entire embedding cache from disk (single file)."""
+    if _CACHE_FILE.exists():
         try:
-            return json.loads(path.read_text())
-        except Exception:
-            return None
-    return None
+            with open(_CACHE_FILE, "r") as f:
+                return json.load(f)
+        except Exception as e:
+            logger.warning(f"Failed to load embedding cache: {e}")
+    return {}
 
 
-def _save_cached(key: str, vector: list[float]) -> None:
+def _save_cache(cache: dict[str, list[float]]) -> None:
+    """Save the entire embedding cache to disk (single file)."""
     _CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    _cache_path(key).write_text(json.dumps(vector))
+    with open(_CACHE_FILE, "w") as f:
+        json.dump(cache, f)
 
+
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
 
 def embed_reviews(reviews: list[Review], pipeline_config: dict) -> np.ndarray:
     """Generate embeddings for review texts using a local sentence-transformers model.
 
-    Checks disk cache first per review (sha256 key). Only encodes
-    uncached reviews in batches using the configured model.
+    Checks batched disk cache first (single file). Only encodes
+    uncached reviews using the cached model singleton.
 
     Args:
         reviews: Scrubbed, filtered reviews.
@@ -79,15 +116,14 @@ def embed_reviews(reviews: list[Review], pipeline_config: dict) -> np.ndarray:
     batch_size = emb_config.get("batch_size", 64)
 
     keys = [_review_key(r) for r in reviews]
-    vectors: dict[str, list[float]] = {}
 
-    # Load from cache
+    # Load full cache from single file
+    cache = _load_cache()
+
     cache_hits = 0
     to_encode: list[tuple[str, Review]] = []
     for key, review in zip(keys, reviews):
-        cached = _load_cached(key)
-        if cached is not None:
-            vectors[key] = cached
+        if key in cache:
             cache_hits += 1
         else:
             to_encode.append((key, review))
@@ -98,9 +134,7 @@ def embed_reviews(reviews: list[Review], pipeline_config: dict) -> np.ndarray:
     )
 
     if to_encode:
-        from sentence_transformers import SentenceTransformer
-        logger.info(f"Loading model {model_name!r} (downloads on first use)...")
-        model = SentenceTransformer(model_name)
+        model = _get_model(model_name)
 
         texts = [r.text for _, r in to_encode]
 
@@ -114,11 +148,12 @@ def embed_reviews(reviews: list[Review], pipeline_config: dict) -> np.ndarray:
         )
 
         for (key, _), vec in zip(to_encode, embeddings):
-            vec_list = vec.tolist()
-            vectors[key] = vec_list
-            _save_cached(key, vec_list)
+            cache[key] = vec.tolist()
+
+        # Write back the updated cache once
+        _save_cache(cache)
 
     # Assemble in original order
-    matrix = np.array([vectors[key] for key in keys], dtype=np.float32)
+    matrix = np.array([cache[key] for key in keys], dtype=np.float32)
     logger.info(f"Embeddings: matrix shape {matrix.shape}")
     return matrix

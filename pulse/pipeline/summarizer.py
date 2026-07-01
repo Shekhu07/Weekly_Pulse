@@ -190,6 +190,7 @@ def summarize_cluster(
     cluster: dict[str, Any],
     reviews: list[Review],
     pipeline_config: dict,
+    client: Any = None,
 ) -> Theme | None:
     """Summarize a single cluster into a Theme using Groq.
 
@@ -197,15 +198,16 @@ def summarize_cluster(
         cluster: Cluster dict with indices, size, avg_rating.
         reviews: Full scrubbed review list.
         pipeline_config: Pipeline config with summarization settings.
+        client: Pre-created Groq client (avoids re-creation per cluster).
 
     Returns:
         Theme object, or None if LLM call fails after retries.
     """
-    from pulse.config import get_env_var
-    api_key = get_env_var("GROQ_API_KEY", required=True)
-
-    from groq import Groq
-    client = Groq(api_key=api_key)
+    if client is None:
+        from pulse.config import get_env_var
+        api_key = get_env_var("GROQ_API_KEY", required=True)
+        from groq import Groq
+        client = Groq(api_key=api_key)
 
     cluster_reviews = [reviews[i] for i in cluster["indices"]]
     n_samples = pipeline_config.get("summarization", {}).get("max_samples_per_cluster", _MAX_SAMPLES_PER_CLUSTER)
@@ -254,6 +256,11 @@ def summarize_all_clusters(
 ) -> list[Theme]:
     """Summarize all top clusters sequentially, respecting Groq rate limits.
 
+    Uses adaptive rate-limiting: only sleeps if elapsed time since the
+    last request is less than the minimum interval. This avoids
+    unnecessary fixed sleeps when Groq API calls themselves already
+    take long enough.
+
     Args:
         clusters: Ranked clusters from clustering step.
         reviews: Full scrubbed review list.
@@ -262,15 +269,22 @@ def summarize_all_clusters(
     Returns:
         List of Themes (may be shorter than clusters if some fail).
     """
-    interval = pipeline_config.get("summarization", {}).get(
+    min_interval = pipeline_config.get("summarization", {}).get(
         "request_interval_seconds", _REQUEST_INTERVAL_SECONDS
     )
     max_tokens_per_run = pipeline_config.get("summarization", {}).get(
         "max_tokens_per_run", _MAX_TOKENS_PER_RUN
     )
 
+    # Create Groq client once for the entire summarization pass
+    from pulse.config import get_env_var
+    api_key = get_env_var("GROQ_API_KEY", required=True)
+    from groq import Groq
+    client = Groq(api_key=api_key)
+
     themes: list[Theme] = []
     total_tokens = 0
+    last_call_time = 0.0
 
     for i, cluster in enumerate(clusters):
         # Daily token cap guard
@@ -286,17 +300,22 @@ def summarize_all_clusters(
             f"avg_rating={cluster['avg_rating']:.2f}, score={cluster['score']:.1f}"
         )
 
-        theme = summarize_cluster(cluster, reviews, pipeline_config)
+        # Adaptive rate-limiting: only sleep if needed
+        if last_call_time > 0:
+            elapsed = time.time() - last_call_time
+            if elapsed < min_interval:
+                sleep_time = min_interval - elapsed
+                logger.debug(f"Rate limit: sleeping {sleep_time:.1f}s")
+                time.sleep(sleep_time)
+
+        last_call_time = time.time()
+        theme = summarize_cluster(cluster, reviews, pipeline_config, client=client)
 
         if theme is not None:
             themes.append(theme)
             # Rough token count from the summarizer's internal tracker isn't accessible here
             # Use estimate: ~1700 tokens per call
             total_tokens += 1700
-
-        # Rate limit: sleep between requests (except after last)
-        if i < len(clusters) - 1:
-            time.sleep(interval)
 
     logger.info(
         f"Summarization complete: {len(themes)}/{len(clusters)} themes, "
