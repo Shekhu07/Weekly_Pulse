@@ -241,7 +241,7 @@ sequenceDiagram
 ```
 
 ### Real-Time UI Streaming
-The FastAPI server provides a real-time Server-Sent Events (SSE) endpoint (`/api/run/stream`) that runs the orchestrator in a background thread and yields progress updates. The frontend dashboard (`static/index.html`) consumes this stream via `EventSource` to display a dynamic progress bar tracking the pipeline's progress through ingestion, analysis, rendering, and delivery phases. The UI uses a unified **Home** tab that features both the pipeline runner and the analytical dashboard overview in a single view.
+The FastAPI server provides a real-time Server-Sent Events (SSE) endpoint (`/api/run/stream`) that runs the orchestrator in a background thread and yields progress updates. The frontend dashboard (`static/index.html`) consumes this stream via `EventSource` to display a dynamic progress bar tracking the pipeline's progress through ingestion, analysis, rendering, and delivery phases. The pipeline runner is elegantly integrated horizontally into the top navigation header, providing global visibility of the run status. The main UI uses a unified **Home** tab that features the analytical dashboard overview.
 
 ---
 

@@ -744,7 +744,8 @@ Per [edge-cases.md](edge-cases.md) (to be created):
 
 #### 8.3 Runner Hub UI (`static/index.html`)
 - Implement a modern, dark-themed Runner Hub UI using a dynamic progress bar for pipeline tracking.
-- The UI features a combined **Home** tab that displays both the Dashboard Overview (stats, charts, themes) and the Pipeline Runner (initialization, progress, health) side-by-side in a unified view.
+- The UI features a combined **Home** tab that displays the Dashboard Overview (stats, charts, themes).
+- The **Pipeline Runner** (initialization button and dynamic progress bar) is integrated horizontally into the top header (TopAppBar), providing global visibility of the run status without taking up main dashboard space.
 - Use `EventSource` in JavaScript to listen to the SSE endpoint and update the progress bar percentages in real-time.
 - Show a prominent success toast notification upon completion.
 
