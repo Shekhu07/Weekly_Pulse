@@ -158,13 +158,14 @@
             color: #44edb7;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="font-body-md text-body-md">
     <!-- Global Layout Shell -->
     <div class="flex min-h-screen">
         <!-- SideNavBar -->
         <aside class="h-screen w-72 fixed left-0 top-0 bg-surface-container-low/50 backdrop-blur-[10px] border-r border-outline-variant/10 flex flex-col py-margin-desktop px-unit z-50">
-            <div class="mb-10 px-4 cursor-pointer" onclick="switchTab('runner')">
+            <div class="mb-10 px-4 cursor-pointer" onclick="switchTab('home')">
                 <h1 class="font-headline-lg text-headline-lg font-semibold text-primary">Weekly Pulse</h1>
                 <p class="font-label-md text-label-md text-on-surface-variant">Data Analytics</p>
             </div>
@@ -216,6 +217,10 @@
                 <div class="mb-6 pt-4 border-t border-outline-variant/10">
                     <h4 class="px-4 mb-2 font-label-md text-label-md font-bold text-primary uppercase tracking-wider">Historical Ledger</h4>
                     <div class="space-y-2">
+                        <button onclick="switchTab('home')" id="btn-overview" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all group">
+                            <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                            Home
+                        </button>
                         <button onclick="switchTab('ledger')" id="btn-ledger" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all group">
                             <span class="material-symbols-outlined text-[20px]">receipt_long</span>
                             View History
@@ -269,6 +274,75 @@
                     <p class="font-body-lg text-body-lg text-on-surface-variant mt-2 max-w-2xl">Manage your automated data pipelines and monitor historical ingestion performance across the organization.</p>
                 </div>
                 
+                <!-- Tab: Overview -->
+                <div class="space-y-8 animate-in fade-in duration-500" id="content-overview">
+    <!-- Top Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div class="glass-level-1 p-4 rounded-2xl flex flex-col items-center">
+            <span class="text-on-surface-variant text-label-sm tracking-wider uppercase">Analyzed</span>
+            <span class="text-headline-md text-primary font-bold mt-1" id="stat-analyzed">-</span>
+        </div>
+        <div class="glass-level-1 p-4 rounded-2xl flex flex-col items-center">
+            <span class="text-on-surface-variant text-label-sm tracking-wider uppercase">Sources</span>
+            <span class="text-headline-md text-primary font-bold mt-1" id="stat-sources">2</span>
+        </div>
+        <div class="glass-level-1 p-4 rounded-2xl flex flex-col items-center">
+            <span class="text-on-surface-variant text-label-sm tracking-wider uppercase">Themes</span>
+            <span class="text-headline-md text-primary font-bold mt-1" id="stat-themes">-</span>
+        </div>
+        <div class="glass-level-1 p-4 rounded-2xl flex flex-col items-center">
+            <span class="text-on-surface-variant text-label-sm tracking-wider uppercase">Validated</span>
+            <span class="text-headline-md text-primary font-bold mt-1" id="stat-validated">-</span>
+        </div>
+        <div class="glass-level-1 p-4 rounded-2xl flex flex-col items-center">
+            <span class="text-on-surface-variant text-label-sm tracking-wider uppercase">Avg Rating</span>
+            <span class="text-headline-md text-primary font-bold mt-1" id="stat-rating">-</span>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+        <div class="glass-level-1 p-6 rounded-3xl border border-outline-variant/10 flex flex-col">
+            <h3 class="font-label-md text-label-md font-bold mb-4">Source Breakdown</h3>
+            <div class="flex-1 relative min-h-[200px]">
+                <canvas id="sourceChart"></canvas>
+            </div>
+        </div>
+        <div class="glass-level-1 p-6 rounded-3xl border border-outline-variant/10 flex flex-col">
+            <h3 class="font-label-md text-label-md font-bold mb-4">Rating Distribution</h3>
+            <div class="flex-1 relative min-h-[200px]">
+                <canvas id="ratingChart"></canvas>
+            </div>
+        </div>
+        <div class="glass-level-1 p-6 rounded-3xl border border-outline-variant/10 flex flex-col">
+            <h3 class="font-label-md text-label-md font-bold mb-4">Filtered Sentiment</h3>
+            <div class="flex-1 relative min-h-[200px]">
+                <canvas id="sentimentChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Themes -->
+    <div class="glass-level-1 rounded-3xl border border-outline-variant/10 overflow-hidden">
+        <div class="p-6 border-b border-outline-variant/10">
+            <h3 class="font-headline-md text-headline-md font-bold text-on-surface">Primary Themes</h3>
+        </div>
+        <div id="themesList" class="divide-y divide-outline-variant/10">
+            <p class="p-6 text-on-surface-variant">Loading themes...</p>
+        </div>
+    </div>
+    
+    <!-- Highlight Quotes -->
+    <div class="glass-level-1 rounded-3xl border border-outline-variant/10 overflow-hidden">
+        <div class="p-6 border-b border-outline-variant/10">
+            <h3 class="font-headline-md text-headline-md font-bold text-on-surface">Highlight Quotes</h3>
+        </div>
+        <div id="quotesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+            <p class="text-on-surface-variant">Loading quotes...</p>
+        </div>
+    </div>
+</div>
+
                 <!-- Tab: Runner (Active) -->
                 <div class="space-y-8 animate-in duration-500" id="content-runner">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
@@ -344,18 +418,157 @@
 
     <!-- Scripts -->
     <script>
-        function switchTab(tab) {
+        document.getElementById('productSelect').addEventListener('change', () => {
+            if (!document.getElementById('content-overview').classList.contains('hidden')) loadOverview();
+        });
+        document.getElementById('isoWeekInput').addEventListener('change', () => {
+            if (!document.getElementById('content-overview').classList.contains('hidden')) loadOverview();
+        });
+
+        let charts = {};
+        
+        function initChart(id, type, data, options) {
+            const ctx = document.getElementById(id);
+            if (charts[id]) charts[id].destroy();
+            charts[id] = new Chart(ctx, { type, data, options });
+        }
+
+
+async function loadOverview() {
+            const product = document.getElementById('productSelect').value;
+            const week = document.getElementById('isoWeekInput').value;
+            try {
+                const res = await fetch(`/api/report?product=${product}&iso_week=${week}`);
+                const data = await res.json();
+                
+                if (data.status === 'error') {
+                    document.getElementById('stat-analyzed').textContent = 'N/A';
+                    document.getElementById('themesList').innerHTML = `<p class="p-6 text-error">${data.error}</p>`;
+                    return;
+                }
+
+                // Stats
+                document.getElementById('stat-analyzed').textContent = data.review_count || 0;
+                document.getElementById('stat-themes').textContent = data.themes ? data.themes.length : 0;
+                
+                let validatedQuotes = 0;
+                let totalRating = 0;
+                let ratingCount = 0;
+                
+                if (data.rating_distribution) {
+                    for (let i=1; i<=5; i++) {
+                        let c = data.rating_distribution[i] || 0;
+                        totalRating += i * c;
+                        ratingCount += c;
+                    }
+                }
+                const avgRating = ratingCount > 0 ? (totalRating / ratingCount).toFixed(2) : '-';
+                document.getElementById('stat-rating').textContent = `${avgRating}★`;
+
+                // Charts
+                Chart.defaults.color = '#e1e2eb';
+                Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+
+                // Source Chart (Fake data for now since backend doesn't store source breakdown yet)
+                initChart('sourceChart', 'doughnut', {
+                    labels: ['App Store', 'Play Store'],
+                    datasets: [{
+                        data: [15, 85],
+                        backgroundColor: ['#00D09C', '#2d3037'],
+                        borderWidth: 0
+                    }]
+                }, { maintainAspectRatio: false });
+
+                // Rating Chart
+                const rd = data.rating_distribution || {};
+                initChart('ratingChart', 'bar', {
+                    labels: ['5★', '4★', '3★', '2★', '1★'],
+                    datasets: [{
+                        data: [rd[5]||0, rd[4]||0, rd[3]||0, rd[2]||0, rd[1]||0],
+                        backgroundColor: '#44edb7',
+                        borderRadius: 4
+                    }]
+                }, { maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } } });
+
+                // Sentiment Chart
+                const sd = data.sentiment_distribution || {};
+                initChart('sentimentChart', 'bar', {
+                    labels: ['Positive', 'Neutral', 'Negative'],
+                    datasets: [{
+                        data: [sd['Positive']||0, sd['Neutral']||0, sd['Negative']||0],
+                        backgroundColor: ['#44edb7', '#c4c6ce', '#ffb4ab'],
+                        borderRadius: 4
+                    }]
+                }, { maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } } });
+
+                // Themes
+                let themesHtml = '';
+                let quotesHtml = '';
+                if (data.themes) {
+                    data.themes.forEach(t => {
+                        validatedQuotes += (t.quotes ? t.quotes.length : 0);
+                        let sentimentColor = t.sentiment === 'NEGATIVE' ? 'error' : (t.sentiment === 'POSITIVE' ? 'primary' : 'secondary');
+                        themesHtml += `
+                        <div class="p-6 hover:bg-white/5 transition-colors cursor-pointer group">
+                            <div class="flex items-start gap-4">
+                                <span class="bg-${sentimentColor}/20 text-${sentimentColor} px-2 py-1 rounded text-label-sm font-bold">[${t.sentiment}]</span>
+                                <div class="flex-1">
+                                    <h4 class="font-headline-md text-[18px] text-primary group-hover:text-primary-fixed">${t.theme_name}</h4>
+                                    <p class="text-on-surface-variant mt-2">${t.summary}</p>
+                                    <div class="flex gap-2 mt-3">
+                                        ${(t.teams || []).map(team => `<span class="bg-surface-variant/50 px-2 py-1 rounded text-[12px]">${team}</span>`).join('')}
+                                    </div>
+                                </div>
+                                <span class="material-symbols-outlined text-on-surface-variant group-hover:text-white">chevron_right</span>
+                            </div>
+                        </div>`;
+                        
+                        // Quotes
+                        if (t.quotes) {
+                            t.quotes.forEach(q => {
+                                quotesHtml += `
+                                <div class="glass-level-2 p-4 rounded-2xl border-l-4 border-${sentimentColor}">
+                                    <p class="text-[14px] italic text-on-surface">"${q}"</p>
+                                    <div class="mt-4 flex justify-between items-center text-[12px] text-on-surface-variant">
+                                        <span>From: ${t.theme_name}</span>
+                                    </div>
+                                </div>`;
+                            });
+                        }
+                    });
+                }
+                
+                document.getElementById('stat-validated').textContent = validatedQuotes;
+                document.getElementById('themesList').innerHTML = themesHtml || '<p class="p-6 text-on-surface-variant">No themes found.</p>';
+                document.getElementById('quotesGrid').innerHTML = quotesHtml || '<p class="text-on-surface-variant">No quotes found.</p>';
+
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+                function switchTab(tab) {
             const runnerContent = document.getElementById('content-runner');
             const ledgerContent = document.getElementById('content-ledger');
+            const overviewContent = document.getElementById('content-overview');
             const btnLedger = document.getElementById('btn-ledger');
+            const btnOverview = document.getElementById('btn-overview');
 
-            if (tab === 'runner') {
+            [runnerContent, ledgerContent, overviewContent].forEach(el => el && el.classList.add('hidden'));
+            if(btnLedger) { btnLedger.classList.remove('text-primary', 'bg-primary/5'); btnLedger.classList.add('text-on-surface-variant'); }
+            if(btnOverview) { btnOverview.classList.remove('text-primary', 'bg-primary/5'); btnOverview.classList.add('text-on-surface-variant'); }
+
+            if (tab === 'home') {
                 runnerContent.classList.remove('hidden');
-                ledgerContent.classList.add('hidden');
-                if(btnLedger) {
-                    btnLedger.classList.remove('text-primary', 'bg-primary/5');
-                    btnLedger.classList.add('text-on-surface-variant');
-                }
+                overviewContent.classList.remove('hidden');
+                if(btnOverview) { btnOverview.classList.add('text-primary', 'bg-primary/5'); btnOverview.classList.remove('text-on-surface-variant'); }
+                loadOverview();
+            } else if (tab === 'ledger') {
+                ledgerContent.classList.remove('hidden');
+                if(btnLedger) { btnLedger.classList.add('text-primary', 'bg-primary/5'); btnLedger.classList.remove('text-on-surface-variant'); }
+                loadLedger();
+            }
+        }
             } else if (tab === 'ledger') {
                 runnerContent.classList.add('hidden');
                 ledgerContent.classList.remove('hidden');
@@ -518,6 +731,8 @@
                 showError("Server connection error.");
             };
         }
+        
+        window.addEventListener("DOMContentLoaded", () => { switchTab("home"); });
     </script>
 </body>
 </html>
