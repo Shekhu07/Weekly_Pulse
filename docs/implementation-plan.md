@@ -18,6 +18,7 @@ Phase-wise build plan for the Groww Play Store review pulse system. Derived from
 | **5** | Gmail MCP Delivery | Gmail MCP integration, draft/send, idempotency | Email teaser drafted/sent via MCP with deep link to Doc section |
 | **6** | Orchestrator, CLI & Ledger | End-to-end coordinator, CLI commands, run ledger, idempotency | Full `pulse run --product groww` completes end-to-end |
 | **7** | Testing & Polish | Unit tests, integration tests, edge-case handling, documentation | All tests pass; dry-run and staging run validated |
+| **8** | Real-time FastAPI UI | SSE streaming, Stepper UI | Real-time progress updates in the browser via Server-Sent Events |
 
 ```mermaid
 gantt
@@ -37,6 +38,8 @@ gantt
     section Integration
         Phase 6 - Orchestrator/CLI :p6, after p5, 3d
         Phase 7 - Testing/Polish   :p7, after p6, 3d
+    section UI
+        Phase 8 - Real-time UI     :p8, after p7, 2d
 ```
 
 ---
@@ -722,6 +725,31 @@ Per [edge-cases.md](edge-cases.md) (to be created):
 - [ ] One successful staging run: Doc section + Gmail draft
 - [ ] Re-run is idempotent
 - [ ] README complete with setup and usage
+
+---
+
+## Phase 8 — Real-time FastAPI UI
+
+**Goal:** Provide a rich, real-time web dashboard using Server-Sent Events (SSE) to track pipeline progress.
+
+### Deliverables
+
+#### 8.1 Streaming Endpoint (`api.py`)
+- Add a new `GET /api/run/stream` endpoint returning a `StreamingResponse` (text/event-stream).
+- Execute `execute_run` in a background thread and use a queue to push progress updates.
+
+#### 8.2 Progress Callbacks (`pulse/agent/orchestrator.py`)
+- Modify `execute_run` to accept an optional `progress_callback` parameter.
+- Invoke the callback at the start of each major phase: initializing, ingestion, analysis, render, delivery.
+
+#### 8.3 Stepper UI (`static/index.html`)
+- Implement a dynamic Stepper UI using CSS animations (glowing borders, spinners).
+- Use `EventSource` in JavaScript to listen to the SSE endpoint and update the UI in real-time.
+- Show a prominent success message upon completion.
+
+### Exit Criteria
+- [ ] User can trigger a run from the UI and see real-time step-by-step progress.
+- [ ] UI gracefully handles success and error events from the stream.
 
 ---
 

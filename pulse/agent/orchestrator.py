@@ -29,7 +29,7 @@ from pulse.render.email_teaser import build_email_teaser
 logger = logging.getLogger(__name__)
 
 
-def execute_run(run_context: RunContext, product_config: dict, pipeline_config: dict) -> dict:
+def execute_run(run_context: RunContext, product_config: dict, pipeline_config: dict, progress_callback=None) -> dict:
     """Execute a full pulse run for a product and ISO week.
 
     Flow:
@@ -55,6 +55,7 @@ def execute_run(run_context: RunContext, product_config: dict, pipeline_config: 
     init_db()
 
     # 1. Idempotency check
+    if progress_callback: progress_callback("initializing")
     completed = check_run_completed(run_context.product, run_context.iso_week)
     if completed:
         logger.info(f"Run already completed for {run_context.product} {run_context.iso_week}. Skipping.")
@@ -65,6 +66,7 @@ def execute_run(run_context: RunContext, product_config: dict, pipeline_config: 
     try:
         # 2. Ingest
         logger.info("Phase 1: Ingestion")
+        if progress_callback: progress_callback("ingestion")
         from pulse.ingestion.normalizer import normalize_reviews
         from pulse.ingestion.cache import save_to_cache
         
@@ -77,14 +79,17 @@ def execute_run(run_context: RunContext, product_config: dict, pipeline_config: 
 
         # 3. Pipeline
         logger.info("Phase 2: Analysis pipeline")
+        if progress_callback: progress_callback("analysis")
         report = analyze(reviews, run_context, pipeline_config)
 
         # 4. Render
         logger.info("Phase 3: Render")
+        if progress_callback: progress_callback("render")
         doc_section = build_doc_section(report, run_context)
         
         doc_url = ""
         # 5. Deliver Doc (Phase 4)
+        if progress_callback: progress_callback("delivery")
         if not run_context.dry_run:
             logger.info("Phase 4: Docs delivery")
             doc_result = append_doc_section(doc_section, product_config)

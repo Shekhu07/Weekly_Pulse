@@ -338,12 +338,36 @@
 <span class="material-symbols-outlined">play_arrow</span> Run Pipeline
 </button>
 
-<div id="statusContainer" class="hidden mt-10 w-full max-w-md glass-level-2 rounded-2xl p-6 flex items-center gap-4">
-<div id="statusSpinner" class="loading-spinner"></div>
-<span id="statusIcon" class="material-symbols-outlined text-primary hidden">check_circle</span>
-<div class="flex-1">
-<p id="statusText" class="font-label-md text-label-md text-primary">Processing review data...</p>
-</div>
+<div id="statusContainer" class="hidden mt-10 w-full max-w-md glass-level-2 rounded-2xl p-6 flex flex-col gap-4">
+    <!-- Steps -->
+    <div class="flex items-center gap-4 transition-all duration-300" id="step-initializing">
+        <div class="w-6 h-6 rounded-full border-2 border-outline-variant/30 flex items-center justify-center step-icon transition-all"></div>
+        <span class="font-label-md text-on-surface-variant step-text transition-colors">Initializing Pipeline</span>
+    </div>
+    <div class="flex items-center gap-4 transition-all duration-300" id="step-ingestion">
+        <div class="w-6 h-6 rounded-full border-2 border-outline-variant/30 flex items-center justify-center step-icon transition-all"></div>
+        <span class="font-label-md text-on-surface-variant step-text transition-colors">Data Ingestion</span>
+    </div>
+    <div class="flex items-center gap-4 transition-all duration-300" id="step-analysis">
+        <div class="w-6 h-6 rounded-full border-2 border-outline-variant/30 flex items-center justify-center step-icon transition-all"></div>
+        <span class="font-label-md text-on-surface-variant step-text transition-colors">Analysis Pipeline</span>
+    </div>
+    <div class="flex items-center gap-4 transition-all duration-300" id="step-render">
+        <div class="w-6 h-6 rounded-full border-2 border-outline-variant/30 flex items-center justify-center step-icon transition-all"></div>
+        <span class="font-label-md text-on-surface-variant step-text transition-colors">Report Rendering</span>
+    </div>
+    <div class="flex items-center gap-4 transition-all duration-300" id="step-delivery">
+        <div class="w-6 h-6 rounded-full border-2 border-outline-variant/30 flex items-center justify-center step-icon transition-all"></div>
+        <span class="font-label-md text-on-surface-variant step-text transition-colors">Document & Email Delivery</span>
+    </div>
+    
+    <!-- Final Status -->
+    <div id="finalStatus" class="hidden mt-4 pt-4 border-t border-outline-variant/10 flex items-center gap-4">
+        <span id="statusIcon" class="material-symbols-outlined text-primary">check_circle</span>
+        <div class="flex-1">
+            <p id="statusText" class="font-label-md text-label-md text-primary">Pipeline processing...</p>
+        </div>
+    </div>
 </div>
 
 </div>
@@ -569,17 +593,27 @@
         async function runPipeline() {
             const btn = document.getElementById('runBtn');
             const statusContainer = document.getElementById('statusContainer');
+            const finalStatus = document.getElementById('finalStatus');
             const statusText = document.getElementById('statusText');
-            const statusSpinner = document.getElementById('statusSpinner');
             const statusIcon = document.getElementById('statusIcon');
             
+            // Reset all steps
+            const allSteps = ['initializing', 'ingestion', 'analysis', 'render', 'delivery'];
+            allSteps.forEach(step => {
+                const el = document.getElementById(`step-${step}`);
+                if (el) {
+                    const icon = el.querySelector('.step-icon');
+                    const text = el.querySelector('.step-text');
+                    icon.className = 'w-6 h-6 rounded-full border-2 border-outline-variant/30 flex items-center justify-center step-icon transition-all';
+                    icon.innerHTML = '';
+                    text.className = 'font-label-md text-on-surface-variant step-text transition-colors';
+                }
+            });
+
             btn.disabled = true;
             btn.classList.add('opacity-50', 'cursor-not-allowed');
             statusContainer.classList.remove('hidden');
-            statusText.textContent = "Processing pipeline... this may take a minute.";
-            statusText.className = "font-label-md text-primary";
-            statusSpinner.classList.remove('hidden');
-            statusIcon.classList.add('hidden');
+            finalStatus.classList.add('hidden');
 
             const payload = {
                 product: document.getElementById('productSelect').value,
@@ -587,43 +621,91 @@
                 email_mode: document.querySelector('input[name="delivery"]:checked').value,
                 dry_run: document.getElementById('dryRunToggle').checked
             };
-
-            try {
-                const response = await fetch('/api/run', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await response.json();
+            
+            const queryParams = new URLSearchParams(payload).toString();
+            const eventSource = new EventSource(`/api/run/stream?${queryParams}`);
+            
+            let currentStep = null;
+            
+            function markStepActive(stepId) {
+                if (currentStep && currentStep !== stepId) markStepComplete(currentStep);
+                currentStep = stepId;
                 
-                statusSpinner.classList.add('hidden');
-                statusIcon.classList.remove('hidden');
-                
-                if (data.status === 'success' || data.status === 'completed' || data.status === 'skipped_dry_run') {
-                    statusIcon.textContent = "check_circle";
-                    statusIcon.className = "material-symbols-outlined text-primary";
-                    statusText.textContent = `Success! Processed ${data.review_count || 0} reviews.`;
-                } else if (data.status === 'skipped_already_completed') {
-                    statusIcon.textContent = "info";
-                    statusIcon.className = "material-symbols-outlined text-primary";
-                    statusText.textContent = "Skipped: Already completed.";
-                } else {
-                    statusIcon.textContent = "error";
-                    statusIcon.className = "material-symbols-outlined text-error";
-                    statusText.className = "font-label-md text-error";
-                    statusText.textContent = `Error: ${data.error || 'Pipeline failed'}`;
+                const el = document.getElementById(`step-${stepId}`);
+                if (el) {
+                    const icon = el.querySelector('.step-icon');
+                    const text = el.querySelector('.step-text');
+                    icon.className = 'w-6 h-6 rounded-full border-2 border-primary border-l-transparent animate-spin flex items-center justify-center step-icon transition-all';
+                    text.className = 'font-label-md text-primary font-medium step-text transition-colors';
                 }
-            } catch (err) {
-                statusSpinner.classList.add('hidden');
-                statusIcon.classList.remove('hidden');
+            }
+            
+            function markStepComplete(stepId) {
+                const el = document.getElementById(`step-${stepId}`);
+                if (el) {
+                    const icon = el.querySelector('.step-icon');
+                    const text = el.querySelector('.step-text');
+                    icon.className = 'w-6 h-6 rounded-full border-2 border-primary bg-primary/20 text-primary flex items-center justify-center step-icon transition-all';
+                    icon.innerHTML = '<span class="material-symbols-outlined text-[14px]">check</span>';
+                    text.className = 'font-label-md text-on-surface step-text transition-colors';
+                }
+            }
+            
+            function showError(errorMsg) {
+                if (currentStep) {
+                    const el = document.getElementById(`step-${currentStep}`);
+                    if (el) {
+                        const icon = el.querySelector('.step-icon');
+                        const text = el.querySelector('.step-text');
+                        icon.className = 'w-6 h-6 rounded-full border-2 border-error bg-error/20 text-error flex items-center justify-center step-icon transition-all';
+                        icon.innerHTML = '<span class="material-symbols-outlined text-[14px]">close</span>';
+                        text.className = 'font-label-md text-error font-medium step-text transition-colors';
+                    }
+                }
+                finalStatus.classList.remove('hidden');
                 statusIcon.textContent = "error";
                 statusIcon.className = "material-symbols-outlined text-error";
                 statusText.className = "font-label-md text-error";
-                statusText.textContent = "Server connection error.";
-            } finally {
+                statusText.textContent = `Error: ${errorMsg || 'Pipeline failed'}`;
+                
+                eventSource.close();
                 btn.disabled = false;
                 btn.classList.remove('opacity-50', 'cursor-not-allowed');
             }
+
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                
+                if (data.type === 'step') {
+                    markStepActive(data.step);
+                } else if (data.type === 'complete') {
+                    if (currentStep) markStepComplete(currentStep);
+                    finalStatus.classList.remove('hidden');
+                    
+                    const result = data.summary;
+                    if (result.status === 'success' || result.status === 'completed' || result.status === 'skipped_dry_run') {
+                        statusIcon.textContent = "check_circle";
+                        statusIcon.className = "material-symbols-outlined text-primary";
+                        statusText.className = "font-label-md text-primary";
+                        statusText.textContent = `Success! Processed reviews successfully.`;
+                    } else if (result.status === 'skipped_already_completed') {
+                        statusIcon.textContent = "info";
+                        statusIcon.className = "material-symbols-outlined text-primary";
+                        statusText.className = "font-label-md text-primary";
+                        statusText.textContent = "Skipped: Already completed.";
+                    }
+                    
+                    eventSource.close();
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else if (data.type === 'error') {
+                    showError(data.error);
+                }
+            };
+            
+            eventSource.onerror = function() {
+                showError("Server connection error.");
+            };
         }
 
         async function loadLedger() {

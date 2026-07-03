@@ -240,6 +240,9 @@ sequenceDiagram
 }
 ```
 
+### Real-Time UI Streaming
+The FastAPI server provides a real-time Server-Sent Events (SSE) endpoint (`/api/run/stream`) that runs the orchestrator in a background thread and yields progress updates. The frontend dashboard (`static/index.html`) consumes this stream via `EventSource` to display a dynamic stepper UI tracking the pipeline's progress through ingestion, analysis, rendering, and delivery phases.
+
 ---
 
 ## 6. Play Store Ingestion

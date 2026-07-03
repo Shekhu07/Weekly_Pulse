@@ -1,9 +1,12 @@
 from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
+import queue
+import threading
+import json
 
 from pulse.config import load_product_config, load_pipeline_config
 from pulse.ingestion.models import RunContext
@@ -55,6 +58,46 @@ async def api_run_pipeline(payload: RunPayload):
         return summary
     except Exception as e:
         return {"status": "error", "error": str(e)}
+
+
+@app.get("/api/run/stream")
+async def api_run_pipeline_stream(product: str, iso_week: str, email_mode: str, dry_run: str):
+    is_dry_run = dry_run.lower() == 'true'
+    q = queue.Queue()
+
+    def progress_callback(step: str):
+        q.put({"type": "step", "step": step})
+
+    def run_worker():
+        try:
+            product_config = load_product_config(product)
+            pipeline_config = load_pipeline_config()
+            ingestion_cfg = product_config.get("ingestion", {})
+            window_weeks = ingestion_cfg.get("window_weeks", 10)
+            
+            ctx = RunContext(
+                product=product,
+                iso_week=iso_week,
+                window_weeks=window_weeks,
+                dry_run=is_dry_run,
+                email_mode=email_mode,
+            )
+            
+            summary = execute_run(ctx, product_config, pipeline_config, progress_callback)
+            q.put({"type": "complete", "summary": summary})
+        except Exception as e:
+            q.put({"type": "error", "error": str(e)})
+
+    threading.Thread(target=run_worker).start()
+
+    async def event_generator():
+        while True:
+            msg = q.get()
+            yield f"data: {json.dumps(msg)}\n\n"
+            if msg["type"] in ["complete", "error"]:
+                break
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 
 @app.get("/api/ledger")
