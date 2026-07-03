@@ -1,104 +1,105 @@
 <!DOCTYPE html>
-<html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Weekly Pulse Dashboard</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Tailwind Configuration -->
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "secondary-fixed-dim": "#c4c6ce",
-                    "inverse-on-surface": "#2e3037",
-                    "background": "#0E1117",
-                    "surface-tint": "#2fe0aa",
-                    "surface-dim": "#101319",
-                    "outline": "#85948c",
-                    "on-secondary-container": "#b6b8c0",
-                    "on-background": "#e1e2eb",
-                    "surface-container-highest": "#32353c",
-                    "on-tertiary": "#003828",
-                    "on-error-container": "#ffdad6",
-                    "on-primary-fixed-variant": "#00513b",
-                    "on-error": "#690005",
-                    "primary-container": "#00d09c",
-                    "tertiary-fixed": "#89f7ce",
-                    "surface-container-high": "#272a31",
-                    "error": "#ffb4ab",
-                    "surface-container-lowest": "#0b0e14",
-                    "on-primary": "#003828",
-                    "primary": "#44edb7",
-                    "tertiary": "#79e7bf",
-                    "error-container": "#93000a",
-                    "tertiary-fixed-dim": "#6cdab2",
-                    "on-secondary-fixed-variant": "#44474d",
-                    "surface": "#101319",
-                    "on-secondary-fixed": "#191c22",
-                    "inverse-surface": "#e1e2eb",
-                    "outline-variant": "#3c4a43",
-                    "tertiary-container": "#5ccba4",
-                    "secondary-container": "#464950",
-                    "on-tertiary-fixed-variant": "#00513c",
-                    "on-secondary": "#2d3037",
-                    "primary-fixed-dim": "#2fe0aa",
-                    "on-primary-container": "#00533c",
-                    "on-tertiary-fixed": "#002116",
-                    "on-surface": "#e1e2eb",
-                    "on-surface-variant": "#bacac1",
-                    "primary-fixed": "#59fdc5",
-                    "secondary": "#c4c6ce",
-                    "surface-container-low": "#191c22",
-                    "surface-bright": "#363940",
-                    "on-primary-fixed": "#002116",
-                    "secondary-fixed": "#e1e2ea",
-                    "on-tertiary-container": "#00533d",
-                    "surface-variant": "#32353c",
-                    "surface-container": "#1d2026",
-                    "inverse-primary": "#006c4f"
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Weekly Pulse Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <!-- Tailwind Configuration -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#c4c6ce",
+                        "inverse-on-surface": "#2e3037",
+                        "background": "#0E1117",
+                        "surface-tint": "#2fe0aa",
+                        "surface-dim": "#101319",
+                        "outline": "#85948c",
+                        "on-secondary-container": "#b6b8c0",
+                        "on-background": "#e1e2eb",
+                        "surface-container-highest": "#32353c",
+                        "on-tertiary": "#003828",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#00513b",
+                        "on-error": "#690005",
+                        "primary-container": "#00d09c",
+                        "tertiary-fixed": "#89f7ce",
+                        "surface-container-high": "#272a31",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#0b0e14",
+                        "on-primary": "#003828",
+                        "primary": "#44edb7",
+                        "tertiary": "#79e7bf",
+                        "error-container": "#93000a",
+                        "tertiary-fixed-dim": "#6cdab2",
+                        "on-secondary-fixed-variant": "#44474d",
+                        "surface": "#101319",
+                        "on-secondary-fixed": "#191c22",
+                        "inverse-surface": "#e1e2eb",
+                        "outline-variant": "#3c4a43",
+                        "tertiary-container": "#5ccba4",
+                        "secondary-container": "#464950",
+                        "on-tertiary-fixed-variant": "#00513c",
+                        "on-secondary": "#2d3037",
+                        "primary-fixed-dim": "#2fe0aa",
+                        "on-primary-container": "#00533c",
+                        "on-tertiary-fixed": "#002116",
+                        "on-surface": "#e1e2eb",
+                        "on-surface-variant": "#bacac1",
+                        "primary-fixed": "#59fdc5",
+                        "secondary": "#c4c6ce",
+                        "surface-container-low": "#191c22",
+                        "surface-bright": "#363940",
+                        "on-primary-fixed": "#002116",
+                        "secondary-fixed": "#e1e2ea",
+                        "on-tertiary-container": "#00533d",
+                        "surface-variant": "#32353c",
+                        "surface-container": "#1d2026",
+                        "inverse-primary": "#006c4f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "unit": "8px",
+                        "margin-desktop": "40px",
+                        "gutter": "24px",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Outfit"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Outfit"],
+                        "headline-lg": ["Outfit"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-xl": ["Outfit"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                },
             },
-            "borderRadius": {
-                    "DEFAULT": "0.25rem",
-                    "lg": "0.5rem",
-                    "xl": "0.75rem",
-                    "full": "9999px"
-            },
-            "spacing": {
-                    "margin-mobile": "16px",
-                    "unit": "8px",
-                    "margin-desktop": "40px",
-                    "gutter": "24px",
-                    "container-max": "1440px"
-            },
-            "fontFamily": {
-                    "headline-lg-mobile": ["Outfit"],
-                    "body-md": ["Inter"],
-                    "headline-md": ["Outfit"],
-                    "headline-lg": ["Outfit"],
-                    "body-lg": ["Inter"],
-                    "label-sm": ["Inter"],
-                    "label-md": ["Inter"],
-                    "headline-xl": ["Outfit"]
-            },
-            "fontSize": {
-                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
-                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
-                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
-                    "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
-            }
-          },
-        },
-      }
+        }
     </script>
-<style>
+    <style>
         body {
             background-color: #0E1117;
             color: #e1e2eb;
@@ -157,555 +158,213 @@
             color: #44edb7;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="font-body-md text-body-md">
-<div class="flex min-h-screen">
-<aside class="h-screen w-72 fixed left-0 top-0 bg-surface-container-low/50 backdrop-blur-[10px] border-r border-outline-variant/10 flex flex-col py-margin-desktop px-unit z-50">
-<div class="mb-10 px-4">
-<h1 class="font-headline-lg text-headline-lg font-semibold text-primary">Weekly Pulse</h1>
-<p class="font-label-md text-label-md text-on-surface-variant">Data Analytics</p>
-</div>
-<div class="flex-1 space-y-8 px-4 overflow-y-auto">
-<div>
-<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Product</label>
-<div class="relative">
-<select id="productSelect" class="w-full glass-level-1 rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-primary text-on-surface transition-all">
-<option value="groww">Groww</option>
-<option value="ledger">Ledger Pro</option>
-<option value="runner">Runner X</option>
-</select>
-<span class="material-symbols-outlined absolute right-3 top-3 text-on-surface-variant pointer-events-none">expand_more</span>
-</div>
-</div>
-<div>
-<label class="block font-label-md text-label-md text-on-surface-variant mb-2">ISO Week</label>
-<input id="isoWeekInput" class="w-full glass-level-1 rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-on-surface transition-all border-outline-variant/10" placeholder="YYYY-WXX" type="text" value="2026-W35"/>
-</div>
-<div>
-<label class="block font-label-md text-label-md text-on-surface-variant mb-3">Delivery Options</label>
-<div class="flex glass-level-1 rounded-xl p-1">
-<div class="flex-1">
-<input checked="" class="hidden custom-radio" id="delivery-draft" name="delivery" value="draft" type="radio"/>
-<label class="flex items-center justify-center py-2 rounded-lg cursor-pointer transition-all font-label-md text-label-md text-on-surface-variant" for="delivery-draft">Draft</label>
-</div>
-<div class="flex-1">
-<input class="hidden custom-radio" id="delivery-send" name="delivery" value="send" type="radio"/>
-<label class="flex items-center justify-center py-2 rounded-lg cursor-pointer transition-all font-label-md text-label-md text-on-surface-variant" for="delivery-send">Send</label>
-</div>
-</div>
-</div>
-<div class="flex items-center justify-between glass-level-1 p-4 rounded-xl">
-<span class="font-label-md text-label-md text-on-surface">Dry Run (Skip Delivery)</span>
-<label class="relative inline-flex items-center cursor-pointer">
-<input id="dryRunToggle" class="sr-only peer" type="checkbox"/>
-<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
-</label>
-</div>
-</div>
-<div class="mt-auto space-y-2 px-4 pt-4">
-<button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all group">
-<span class="material-symbols-outlined text-[20px]">help</span> Support
-</button>
-<button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all">
-<span class="material-symbols-outlined text-[20px]">person</span> Account
-</button>
-</div>
-</aside>
-
-<main class="flex-1 ml-72 min-h-screen bg-background relative">
-<div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10"></div>
-<header class="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max mx-auto bg-surface-dim/80 backdrop-blur-[20px] sticky top-0 z-40 border-b border-outline-variant/5">
-<div class="flex items-center gap-4">
-<span class="material-symbols-outlined text-primary pulse-dot">monitoring</span>
-<h2 class="font-headline-md text-headline-md font-bold text-primary">Runner Hub</h2>
-</div>
-<div class="flex items-center gap-6">
-<div class="relative hidden lg:block">
-<input class="glass-level-1 rounded-full pl-10 pr-4 py-2 text-label-md focus:outline-none border-outline-variant/10 w-64" placeholder="Search analytics..." type="text"/>
-<span class="material-symbols-outlined absolute left-3 top-2 text-on-surface-variant">search</span>
-</div>
-<div class="flex gap-4">
-<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
-<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">history</button>
-</div>
-<div class="w-10 h-10 rounded-full border-2 border-primary/20 overflow-hidden">
-<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUQDDEwb4rNcvsbVcubeDVsVoha_qUH8RDYnLWb13REc93yib_5td68kgaALCjw88WZWuWv2vCKZ2lpe1NBrUU2XrVrONZ_wB0hW2A_Ro0sCViHPPOuTrUMnrfjsqvr8H6FjhqomfjoA3JDs2VOuWgSS5xfZt_y1q7zfqt1jseL2RzGEkUCEdJRg2d_1g7ShQjlYl9qrg4cXKCdqku6_cdu0IBhMlYnU-Vw8o5VlUsgkgZxFNmxDCqyZQsltLllnCKCMzJjTHtBETs"/>
-</div>
-</div>
-</header>
-
-<div class="px-margin-desktop py-10 max-w-container-max mx-auto">
-<div class="mb-8">
-<h1 class="font-headline-xl text-headline-xl text-on-surface">Weekly Pulse Dashboard</h1>
-<p class="font-body-lg text-body-lg text-on-surface-variant mt-2 max-w-2xl">Manage your automated data pipelines and monitor historical ingestion performance across the organization.</p>
-</div>
-
-<div class="mb-10">
-
-<div class="flex gap-8 border-b border-outline-variant/10">
-<button class="flex items-center gap-2 pb-4 px-2 font-label-md text-label-md text-primary border-b-2 border-primary transition-all" id="tab-overview" onclick="switchTab('overview')">
-<span class="material-symbols-outlined">dashboard</span> Overview
-</button>
-<button class="flex items-center gap-2 pb-4 px-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all border-b-2 border-transparent" id="tab-runner" onclick="switchTab('runner')">
-<span class="material-symbols-outlined">rocket_launch</span> Runner
-</button>
-<button class="flex items-center gap-2 pb-4 px-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all border-b-2 border-transparent" id="tab-ledger" onclick="switchTab('ledger')">
-<span class="material-symbols-outlined">receipt_long</span> Ledger
-</button>
-</div>
-
-</div>
-
-
-<div class="space-y-8 animate-in fade-in duration-500" id="content-overview">
-    <!-- Top Stats -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div class="glass-level-1 p-4 rounded-2xl flex flex-col items-center">
-            <span class="text-on-surface-variant text-label-sm tracking-wider uppercase">Analyzed</span>
-            <span class="text-headline-md text-primary font-bold mt-1" id="stat-analyzed">-</span>
-        </div>
-        <div class="glass-level-1 p-4 rounded-2xl flex flex-col items-center">
-            <span class="text-on-surface-variant text-label-sm tracking-wider uppercase">Sources</span>
-            <span class="text-headline-md text-primary font-bold mt-1" id="stat-sources">2</span>
-        </div>
-        <div class="glass-level-1 p-4 rounded-2xl flex flex-col items-center">
-            <span class="text-on-surface-variant text-label-sm tracking-wider uppercase">Themes</span>
-            <span class="text-headline-md text-primary font-bold mt-1" id="stat-themes">-</span>
-        </div>
-        <div class="glass-level-1 p-4 rounded-2xl flex flex-col items-center">
-            <span class="text-on-surface-variant text-label-sm tracking-wider uppercase">Validated</span>
-            <span class="text-headline-md text-primary font-bold mt-1" id="stat-validated">-</span>
-        </div>
-        <div class="glass-level-1 p-4 rounded-2xl flex flex-col items-center">
-            <span class="text-on-surface-variant text-label-sm tracking-wider uppercase">Avg Rating</span>
-            <span class="text-headline-md text-primary font-bold mt-1" id="stat-rating">-</span>
-        </div>
-    </div>
-
-    <!-- Charts -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
-        <div class="glass-level-1 p-6 rounded-3xl border border-outline-variant/10 flex flex-col">
-            <h3 class="font-label-md text-label-md font-bold mb-4">Source Breakdown</h3>
-            <div class="flex-1 relative min-h-[200px]">
-                <canvas id="sourceChart"></canvas>
+    <!-- Global Layout Shell -->
+    <div class="flex min-h-screen">
+        <!-- SideNavBar -->
+        <aside class="h-screen w-72 fixed left-0 top-0 bg-surface-container-low/50 backdrop-blur-[10px] border-r border-outline-variant/10 flex flex-col py-margin-desktop px-unit z-50">
+            <div class="mb-10 px-4 cursor-pointer" onclick="switchTab('runner')">
+                <h1 class="font-headline-lg text-headline-lg font-semibold text-primary">Weekly Pulse</h1>
+                <p class="font-label-md text-label-md text-on-surface-variant">Data Analytics</p>
             </div>
-        </div>
-        <div class="glass-level-1 p-6 rounded-3xl border border-outline-variant/10 flex flex-col">
-            <h3 class="font-label-md text-label-md font-bold mb-4">Rating Distribution</h3>
-            <div class="flex-1 relative min-h-[200px]">
-                <canvas id="ratingChart"></canvas>
-            </div>
-        </div>
-        <div class="glass-level-1 p-6 rounded-3xl border border-outline-variant/10 flex flex-col">
-            <h3 class="font-label-md text-label-md font-bold mb-4">Filtered Sentiment</h3>
-            <div class="flex-1 relative min-h-[200px]">
-                <canvas id="sentimentChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Themes -->
-    <div class="glass-level-1 rounded-3xl border border-outline-variant/10 overflow-hidden">
-        <div class="p-6 border-b border-outline-variant/10">
-            <h3 class="font-headline-md text-headline-md font-bold text-on-surface">Primary Themes</h3>
-        </div>
-        <div id="themesList" class="divide-y divide-outline-variant/10">
-            <p class="p-6 text-on-surface-variant">Loading themes...</p>
-        </div>
-    </div>
-    
-    <!-- Highlight Quotes -->
-    <div class="glass-level-1 rounded-3xl border border-outline-variant/10 overflow-hidden">
-        <div class="p-6 border-b border-outline-variant/10">
-            <h3 class="font-headline-md text-headline-md font-bold text-on-surface">Highlight Quotes</h3>
-        </div>
-        <div id="quotesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
-            <p class="text-on-surface-variant">Loading quotes...</p>
-        </div>
-    </div>
-</div>
-
-<div class="hidden space-y-8 animate-in fade-in duration-500" id="content-runner">
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
-<div class="lg:col-span-2 glass-level-1 rounded-3xl p-8 flex flex-col items-center justify-center min-h-[400px] border-2 border-primary/5">
-<div class="mb-8 p-6 bg-primary/5 rounded-full">
-<span class="material-symbols-outlined text-[64px] text-primary">settings_suggest</span>
-</div>
-<h3 class="font-headline-md text-headline-md mb-2">Initialize Pipeline</h3>
-<p class="text-on-surface-variant mb-8 text-center max-w-sm">Ready to process weekly review data for 2026-W35. Ensure configuration is verified before execution.</p>
-<button id="runBtn" onclick="runPipeline()" class="teal-gradient text-white font-label-md text-headline-md px-10 py-5 rounded-full flex items-center gap-3 transition-all glow-hover active:scale-95">
-<span class="material-symbols-outlined">play_arrow</span> Run Pipeline
-</button>
-
-<div id="statusContainer" class="hidden mt-10 w-full max-w-md glass-level-2 rounded-2xl p-6 flex flex-col gap-4">
-    <!-- Steps -->
-    <div class="flex items-center gap-4 transition-all duration-300" id="step-initializing">
-        <div class="w-6 h-6 rounded-full border-2 border-outline-variant/30 flex items-center justify-center step-icon transition-all"></div>
-        <span class="font-label-md text-on-surface-variant step-text transition-colors">Initializing Pipeline</span>
-    </div>
-    <div class="flex items-center gap-4 transition-all duration-300" id="step-ingestion">
-        <div class="w-6 h-6 rounded-full border-2 border-outline-variant/30 flex items-center justify-center step-icon transition-all"></div>
-        <span class="font-label-md text-on-surface-variant step-text transition-colors">Data Ingestion</span>
-    </div>
-    <div class="flex items-center gap-4 transition-all duration-300" id="step-analysis">
-        <div class="w-6 h-6 rounded-full border-2 border-outline-variant/30 flex items-center justify-center step-icon transition-all"></div>
-        <span class="font-label-md text-on-surface-variant step-text transition-colors">Analysis Pipeline</span>
-    </div>
-    <div class="flex items-center gap-4 transition-all duration-300" id="step-render">
-        <div class="w-6 h-6 rounded-full border-2 border-outline-variant/30 flex items-center justify-center step-icon transition-all"></div>
-        <span class="font-label-md text-on-surface-variant step-text transition-colors">Report Rendering</span>
-    </div>
-    <div class="flex items-center gap-4 transition-all duration-300" id="step-delivery">
-        <div class="w-6 h-6 rounded-full border-2 border-outline-variant/30 flex items-center justify-center step-icon transition-all"></div>
-        <span class="font-label-md text-on-surface-variant step-text transition-colors">Document & Email Delivery</span>
-    </div>
-    
-    <!-- Final Status -->
-    <div id="finalStatus" class="hidden mt-4 pt-4 border-t border-outline-variant/10 flex items-center gap-4">
-        <span id="statusIcon" class="material-symbols-outlined text-primary">check_circle</span>
-        <div class="flex-1">
-            <p id="statusText" class="font-label-md text-label-md text-primary">Pipeline processing...</p>
-        </div>
-    </div>
-</div>
-
-</div>
-<div class="space-y-gutter">
-<div class="glass-level-1 rounded-3xl p-6 border-l-4 border-primary">
-<h4 class="font-label-md text-label-md font-bold text-primary mb-3 uppercase tracking-wider">Current Session</h4>
-<div class="space-y-4">
-<div class="flex justify-between">
-<span class="text-on-surface-variant">Batch Size</span>
-<span class="font-medium">1,240 Reviews</span>
-</div>
-<div class="flex justify-between">
-<span class="text-on-surface-variant">Estimated Time</span>
-<span class="font-medium">4m 12s</span>
-</div>
-<div class="flex justify-between">
-<span class="text-on-surface-variant">Target DB</span>
-<span class="font-medium">PG-Cluster-04</span>
-</div>
-</div>
-</div>
-<div class="glass-level-1 rounded-3xl p-6 relative overflow-hidden group">
-<div class="relative z-10">
-<h4 class="font-label-md text-label-md font-bold text-on-surface mb-3">Pipeline Health</h4>
-<div class="flex items-center gap-2 mb-2">
-<span class="w-2 h-2 rounded-full bg-primary pulse-dot"></span>
-<span class="text-primary font-medium">System Nominal</span>
-</div>
-<p class="text-label-sm text-on-surface-variant">All 14 node clusters responding within 15ms latency threshold.</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-
-<div class="hidden space-y-6 animate-in fade-in duration-500" id="content-ledger">
-<div id="ledgerGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-<!-- Ledger items inserted here dynamically -->
-</div>
-</div>
-
-</div>
-</main>
-</div>
-
-<script>
-        
-        let charts = {};
-        function switchTab(tab) {
-            const tabs = ['overview', 'runner', 'ledger'];
             
-            tabs.forEach(t => {
-                const tabEl = document.getElementById(`tab-${t}`);
-                const contentEl = document.getElementById(`content-${t}`);
-                if (!tabEl || !contentEl) return;
+            <!-- Configuration Section -->
+            <div class="flex-1 space-y-8 px-4 overflow-y-auto">
+                <div>
+                    <label class="block font-label-md text-label-md text-on-surface-variant mb-2">Product</label>
+                    <div class="relative">
+                        <select id="productSelect" class="w-full glass-level-1 rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-primary text-on-surface transition-all">
+                            <option value="groww">Groww</option>
+                            <option value="ledger">Ledger Pro</option>
+                            <option value="runner">Runner X</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-3 top-3 text-on-surface-variant pointer-events-none">expand_more</span>
+                    </div>
+                </div>
                 
-                if (t === tab) {
-                    tabEl.classList.add('text-primary', 'border-primary');
-                    tabEl.classList.remove('text-on-surface-variant', 'border-transparent');
-                    contentEl.classList.remove('hidden');
-                } else {
-                    tabEl.classList.add('text-on-surface-variant', 'border-transparent');
-                    tabEl.classList.remove('text-primary', 'border-primary');
-                    contentEl.classList.add('hidden');
-                }
-            });
-
-            if (tab === 'ledger') loadLedger();
-            if (tab === 'overview') loadOverview();
-        }
-
-        // Add event listeners for dropdowns
-        document.getElementById('productSelect').addEventListener('change', () => {
-            if (!document.getElementById('content-overview').classList.contains('hidden')) loadOverview();
-        });
-        document.getElementById('isoWeekInput').addEventListener('change', () => {
-            if (!document.getElementById('content-overview').classList.contains('hidden')) loadOverview();
-        });
-
-        // Initialize Charts helper
-        function initChart(id, type, data, options) {
-            const ctx = document.getElementById(id);
-            if (charts[id]) charts[id].destroy();
-            charts[id] = new Chart(ctx, { type, data, options });
-        }
-
-        async function loadOverview() {
-            const product = document.getElementById('productSelect').value;
-            const week = document.getElementById('isoWeekInput').value;
-            try {
-                const res = await fetch(`/api/report?product=${product}&iso_week=${week}`);
-                const data = await res.json();
+                <div>
+                    <label class="block font-label-md text-label-md text-on-surface-variant mb-2">ISO Week</label>
+                    <input id="isoWeekInput" class="w-full bg-surface-container-low/80 rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-on-surface transition-all border border-outline-variant/30" placeholder="YYYY-WXX" type="text" value="2026-W35">
+                </div>
                 
-                if (data.status === 'error') {
-                    document.getElementById('stat-analyzed').textContent = 'N/A';
-                    document.getElementById('themesList').innerHTML = `<p class="p-6 text-error">${data.error}</p>`;
-                    return;
-                }
-
-                // Stats
-                document.getElementById('stat-analyzed').textContent = data.review_count || 0;
-                document.getElementById('stat-themes').textContent = data.themes ? data.themes.length : 0;
+                <div>
+                    <label class="block font-label-md text-label-md text-on-surface-variant mb-3">Delivery Options</label>
+                    <div class="flex glass-level-1 rounded-xl p-1">
+                        <div class="flex-1">
+                            <input checked="" class="hidden custom-radio" id="delivery-draft" name="delivery" value="draft" type="radio">
+                            <label class="flex items-center justify-center py-2 rounded-lg cursor-pointer transition-all font-label-md text-label-md text-on-surface-variant" for="delivery-draft">Draft</label>
+                        </div>
+                        <div class="flex-1">
+                            <input class="hidden custom-radio" id="delivery-send" name="delivery" value="send" type="radio">
+                            <label class="flex items-center justify-center py-2 rounded-lg cursor-pointer transition-all font-label-md text-label-md text-on-surface-variant" for="delivery-send">Send</label>
+                        </div>
+                    </div>
+                </div>
                 
-                let validatedQuotes = 0;
-                let totalRating = 0;
-                let ratingCount = 0;
+                <div class="flex items-center justify-between glass-level-1 p-4 rounded-xl">
+                    <span class="font-label-md text-label-md text-on-surface">Dry Run (Skip Delivery)</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input id="dryRunToggle" class="sr-only peer" type="checkbox">
+                        <div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Footer Nav -->
+            <div class="mt-auto space-y-2 px-4 pt-4">
+                <div class="mb-6 pt-4 border-t border-outline-variant/10">
+                    <h4 class="px-4 mb-2 font-label-md text-label-md font-bold text-primary uppercase tracking-wider">Historical Ledger</h4>
+                    <div class="space-y-2">
+                        <button onclick="switchTab('ledger')" id="btn-ledger" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all group">
+                            <span class="material-symbols-outlined text-[20px]">receipt_long</span>
+                            View History
+                        </button>
+                    </div>
+                </div>
                 
-                if (data.rating_distribution) {
-                    for (let i=1; i<=5; i++) {
-                        let c = data.rating_distribution[i] || 0;
-                        totalRating += i * c;
-                        ratingCount += c;
-                    }
-                }
-                const avgRating = ratingCount > 0 ? (totalRating / ratingCount).toFixed(2) : '-';
-                document.getElementById('stat-rating').textContent = `${avgRating}★`;
+                <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all group">
+                    <span class="material-symbols-outlined text-[20px]">help</span>
+                    Support
+                </button>
+                <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all">
+                    <span class="material-symbols-outlined text-[20px]">person</span>
+                    Account
+                </button>
+            </div>
+        </aside>
 
-                // Charts
-                Chart.defaults.color = '#e1e2eb';
-                Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+        <!-- Main Content Area -->
+        <main class="flex-1 ml-72 min-h-screen bg-background relative">
+            <!-- Background Decoration -->
+            <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10"></div>
+            
+            <!-- TopAppBar -->
+            <header class="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max mx-auto bg-surface-dim/80 backdrop-blur-[20px] sticky top-0 z-40 border-b border-outline-variant/5">
+                <div class="flex items-center gap-4">
+                    <span class="material-symbols-outlined text-primary pulse-dot">monitoring</span>
+                    <h2 class="font-headline-md text-headline-md font-bold text-primary">Runner Hub</h2>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="relative hidden lg:block">
+                        <input class="glass-level-1 rounded-full pl-10 pr-4 py-2 text-label-md focus:outline-none border-outline-variant/10 w-64" placeholder="Search analytics..." type="text">
+                        <span class="material-symbols-outlined absolute left-3 top-2 text-on-surface-variant">search</span>
+                    </div>
+                    <div class="flex gap-4">
+                        <button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+                        <button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">history</button>
+                    </div>
+                    <div class="w-10 h-10 rounded-full border-2 border-primary/20 overflow-hidden">
+                        <img class="w-full h-full object-cover" data-alt="Profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUQDDEwb4rNcvsbVcubeDVsVoha_qUH8RDYnLWb13REc93yib_5td68kgaALCjw88WZWuWv2vCKZ2lpe1NBrUU2XrVrONZ_wB0hW2A_Ro0sCViHPPOuTrUMnrfjsqvr8H6FjhqomfjoA3JDs2VOuWgSS5xfZt_y1q7zfqt1jseL2RzGEkUCEdJRg2d_1g7ShQjlYl9qrg4cXKCdqku6_cdu0IBhMlYnU-Vw8o5VlUsgkgZxFNmxDCqyZQsltLllnCKCMzJjTHtBETs">
+                    </div>
+                </div>
+            </header>
 
-                // Source Chart (Fake data for now since backend doesn't store source breakdown yet)
-                initChart('sourceChart', 'doughnut', {
-                    labels: ['App Store', 'Play Store'],
-                    datasets: [{
-                        data: [15, 85],
-                        backgroundColor: ['#00D09C', '#2d3037'],
-                        borderWidth: 0
-                    }]
-                }, { maintainAspectRatio: false });
-
-                // Rating Chart
-                const rd = data.rating_distribution || {};
-                initChart('ratingChart', 'bar', {
-                    labels: ['5★', '4★', '3★', '2★', '1★'],
-                    datasets: [{
-                        data: [rd[5]||0, rd[4]||0, rd[3]||0, rd[2]||0, rd[1]||0],
-                        backgroundColor: '#44edb7',
-                        borderRadius: 4
-                    }]
-                }, { maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } } });
-
-                // Sentiment Chart
-                const sd = data.sentiment_distribution || {};
-                initChart('sentimentChart', 'bar', {
-                    labels: ['Positive', 'Neutral', 'Negative'],
-                    datasets: [{
-                        data: [sd['Positive']||0, sd['Neutral']||0, sd['Negative']||0],
-                        backgroundColor: ['#44edb7', '#c4c6ce', '#ffb4ab'],
-                        borderRadius: 4
-                    }]
-                }, { maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } } });
-
-                // Themes
-                let themesHtml = '';
-                let quotesHtml = '';
-                if (data.themes) {
-                    data.themes.forEach(t => {
-                        validatedQuotes += (t.quotes ? t.quotes.length : 0);
-                        let sentimentColor = t.sentiment === 'NEGATIVE' ? 'error' : (t.sentiment === 'POSITIVE' ? 'primary' : 'secondary');
-                        themesHtml += `
-                        <div class="p-6 hover:bg-white/5 transition-colors cursor-pointer group">
-                            <div class="flex items-start gap-4">
-                                <span class="bg-${sentimentColor}/20 text-${sentimentColor} px-2 py-1 rounded text-label-sm font-bold">[${t.sentiment}]</span>
+            <!-- Dashboard Content -->
+            <div class="px-margin-desktop py-10 max-w-container-max mx-auto">
+                
+                <!-- Page Title -->
+                <div class="mb-8">
+                    <h1 class="font-headline-xl text-headline-xl text-on-surface">Weekly Pulse Dashboard</h1>
+                    <p class="font-body-lg text-body-lg text-on-surface-variant mt-2 max-w-2xl">Manage your automated data pipelines and monitor historical ingestion performance across the organization.</p>
+                </div>
+                
+                <!-- Tab: Runner (Active) -->
+                <div class="space-y-8 animate-in duration-500" id="content-runner">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+                        
+                        <!-- Execution Card -->
+                        <div class="lg:col-span-2 glass-level-1 rounded-3xl p-8 flex flex-col items-center justify-center min-h-[400px] border-2 border-primary/5">
+                            <div class="mb-8 p-6 bg-primary/5 rounded-full">
+                                <span class="material-symbols-outlined text-[64px] text-primary">settings_suggest</span>
+                            </div>
+                            <h3 class="font-headline-md text-headline-md mb-2">Initialize Pipeline</h3>
+                            <p class="text-on-surface-variant mb-8 text-center max-w-sm">Ready to process weekly review data for 2026-W35. Ensure configuration is verified before execution.</p>
+                            
+                            <button id="runBtn" onclick="runPipeline()" class="teal-gradient text-white font-label-md text-headline-md px-10 py-5 rounded-full flex items-center gap-3 transition-all glow-hover active:scale-95">
+                                <span class="material-symbols-outlined">play_arrow</span>
+                                Run Pipeline
+                            </button>
+                            
+                            <!-- Status Display (Dynamically updated via SSE) -->
+                            <div id="statusContainer" class="hidden mt-10 w-full max-w-md glass-level-2 rounded-2xl p-6 flex items-center gap-4">
+                                <div id="statusSpinner" class="loading-spinner"></div>
                                 <div class="flex-1">
-                                    <h4 class="font-headline-md text-[18px] text-primary group-hover:text-primary-fixed">${t.theme_name}</h4>
-                                    <p class="text-on-surface-variant mt-2">${t.summary}</p>
-                                    <div class="flex gap-2 mt-3">
-                                        ${(t.teams || []).map(team => `<span class="bg-surface-variant/50 px-2 py-1 rounded text-[12px]">${team}</span>`).join('')}
+                                    <p id="statusText" class="font-label-md text-label-md text-primary">Processing review data...</p>
+                                    <div class="w-full bg-surface-container-highest h-1.5 rounded-full mt-2 overflow-hidden">
+                                        <div id="statusBar" class="bg-primary h-full w-[0%] rounded-full shadow-[0_0_10px_rgba(68,237,183,0.5)] transition-all duration-300"></div>
                                     </div>
                                 </div>
-                                <span class="material-symbols-outlined text-on-surface-variant group-hover:text-white">chevron_right</span>
+                                <span id="statusPercent" class="font-label-md text-label-md text-on-surface-variant">0%</span>
                             </div>
-                        </div>`;
+                        </div>
                         
-                        // Quotes
-                        if (t.quotes) {
-                            t.quotes.forEach(q => {
-                                quotesHtml += `
-                                <div class="glass-level-2 p-4 rounded-2xl border-l-4 border-${sentimentColor}">
-                                    <p class="text-[14px] italic text-on-surface">"${q}"</p>
-                                    <div class="mt-4 flex justify-between items-center text-[12px] text-on-surface-variant">
-                                        <span>From: ${t.theme_name}</span>
+                        <!-- Info Card -->
+                        <div class="space-y-gutter">
+                            <div class="glass-level-1 rounded-3xl p-6 relative overflow-hidden group">
+                                <div class="relative z-10">
+                                    <h4 class="font-label-md text-label-md font-bold text-on-surface mb-3">Pipeline Health</h4>
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="w-2 h-2 rounded-full bg-primary pulse-dot"></span>
+                                        <span class="text-primary font-medium">System Nominal</span>
                                     </div>
-                                </div>`;
-                            });
-                        }
-                    });
-                }
-                
-                document.getElementById('stat-validated').textContent = validatedQuotes;
-                document.getElementById('themesList').innerHTML = themesHtml || '<p class="p-6 text-on-surface-variant">No themes found.</p>';
-                document.getElementById('quotesGrid').innerHTML = quotesHtml || '<p class="text-on-surface-variant">No quotes found.</p>';
+                                    <p class="text-label-sm text-on-surface-variant">All 14 node clusters responding within 15ms latency threshold.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            } catch(e) {
-                console.error(e);
-            }
-        }
-        function switchTab_old(tab) {
-            const runnerTab = document.getElementById('tab-runner');
-            const ledgerTab = document.getElementById('tab-ledger');
+                <!-- Tab: Ledger -->
+                <div class="hidden space-y-6 animate-in fade-in duration-500" id="content-ledger">
+                    <div id="ledgerGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+                        <!-- Ledger items inserted here dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Toast (Hidden by default) -->
+            <div id="successToast" class="hidden fixed bottom-8 right-8 z-50 max-w-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div class="glass-level-2 rounded-2xl p-4 border border-primary/30 shadow-lg flex items-start gap-4">
+                    <div class="bg-primary/10 p-2 rounded-full">
+                        <span id="toastIcon" class="material-symbols-outlined text-primary">check_circle</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 id="toastTitle" class="font-label-md text-label-md font-bold text-on-surface">Pipeline Completed Successfully</h4>
+                        <p id="toastMessage" class="text-label-sm text-on-surface-variant mt-1">Processed and delivered.</p>
+                    </div>
+                    <button class="text-on-surface-variant hover:text-on-surface transition-colors" onclick="document.getElementById('successToast').classList.add('hidden')">
+                        <span class="material-symbols-outlined text-[18px]">close</span>
+                    </button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        function switchTab(tab) {
             const runnerContent = document.getElementById('content-runner');
             const ledgerContent = document.getElementById('content-ledger');
+            const btnLedger = document.getElementById('btn-ledger');
 
             if (tab === 'runner') {
-                runnerTab.classList.add('text-primary', 'border-primary');
-                runnerTab.classList.remove('text-on-surface-variant', 'border-transparent');
-                ledgerTab.classList.remove('text-primary', 'border-primary');
-                ledgerTab.classList.add('text-on-surface-variant', 'border-transparent');
                 runnerContent.classList.remove('hidden');
                 ledgerContent.classList.add('hidden');
-            } else {
-                ledgerTab.classList.add('text-primary', 'border-primary');
-                ledgerTab.classList.remove('text-on-surface-variant', 'border-transparent');
-                runnerTab.classList.remove('text-primary', 'border-primary');
-                runnerTab.classList.add('text-on-surface-variant', 'border-transparent');
-                ledgerContent.classList.remove('hidden');
+                if(btnLedger) {
+                    btnLedger.classList.remove('text-primary', 'bg-primary/5');
+                    btnLedger.classList.add('text-on-surface-variant');
+                }
+            } else if (tab === 'ledger') {
                 runnerContent.classList.add('hidden');
+                ledgerContent.classList.remove('hidden');
+                if(btnLedger) {
+                    btnLedger.classList.add('text-primary', 'bg-primary/5');
+                    btnLedger.classList.remove('text-on-surface-variant');
+                }
                 loadLedger();
             }
-        }
-
-        async function runPipeline() {
-            const btn = document.getElementById('runBtn');
-            const statusContainer = document.getElementById('statusContainer');
-            const finalStatus = document.getElementById('finalStatus');
-            const statusText = document.getElementById('statusText');
-            const statusIcon = document.getElementById('statusIcon');
-            
-            // Reset all steps
-            const allSteps = ['initializing', 'ingestion', 'analysis', 'render', 'delivery'];
-            allSteps.forEach(step => {
-                const el = document.getElementById(`step-${step}`);
-                if (el) {
-                    const icon = el.querySelector('.step-icon');
-                    const text = el.querySelector('.step-text');
-                    icon.className = 'w-6 h-6 rounded-full border-2 border-outline-variant/30 flex items-center justify-center step-icon transition-all';
-                    icon.innerHTML = '';
-                    text.className = 'font-label-md text-on-surface-variant step-text transition-colors';
-                }
-            });
-
-            btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
-            statusContainer.classList.remove('hidden');
-            finalStatus.classList.add('hidden');
-
-            const payload = {
-                product: document.getElementById('productSelect').value,
-                iso_week: document.getElementById('isoWeekInput').value,
-                email_mode: document.querySelector('input[name="delivery"]:checked').value,
-                dry_run: document.getElementById('dryRunToggle').checked
-            };
-            
-            const queryParams = new URLSearchParams(payload).toString();
-            const eventSource = new EventSource(`/api/run/stream?${queryParams}`);
-            
-            let currentStep = null;
-            
-            function markStepActive(stepId) {
-                if (currentStep && currentStep !== stepId) markStepComplete(currentStep);
-                currentStep = stepId;
-                
-                const el = document.getElementById(`step-${stepId}`);
-                if (el) {
-                    const icon = el.querySelector('.step-icon');
-                    const text = el.querySelector('.step-text');
-                    icon.className = 'w-6 h-6 rounded-full border-2 border-primary border-l-transparent animate-spin flex items-center justify-center step-icon transition-all';
-                    text.className = 'font-label-md text-primary font-medium step-text transition-colors';
-                }
-            }
-            
-            function markStepComplete(stepId) {
-                const el = document.getElementById(`step-${stepId}`);
-                if (el) {
-                    const icon = el.querySelector('.step-icon');
-                    const text = el.querySelector('.step-text');
-                    icon.className = 'w-6 h-6 rounded-full border-2 border-primary bg-primary/20 text-primary flex items-center justify-center step-icon transition-all';
-                    icon.innerHTML = '<span class="material-symbols-outlined text-[14px]">check</span>';
-                    text.className = 'font-label-md text-on-surface step-text transition-colors';
-                }
-            }
-            
-            function showError(errorMsg) {
-                if (currentStep) {
-                    const el = document.getElementById(`step-${currentStep}`);
-                    if (el) {
-                        const icon = el.querySelector('.step-icon');
-                        const text = el.querySelector('.step-text');
-                        icon.className = 'w-6 h-6 rounded-full border-2 border-error bg-error/20 text-error flex items-center justify-center step-icon transition-all';
-                        icon.innerHTML = '<span class="material-symbols-outlined text-[14px]">close</span>';
-                        text.className = 'font-label-md text-error font-medium step-text transition-colors';
-                    }
-                }
-                finalStatus.classList.remove('hidden');
-                statusIcon.textContent = "error";
-                statusIcon.className = "material-symbols-outlined text-error";
-                statusText.className = "font-label-md text-error";
-                statusText.textContent = `Error: ${errorMsg || 'Pipeline failed'}`;
-                
-                eventSource.close();
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
-
-            eventSource.onmessage = function(event) {
-                const data = JSON.parse(event.data);
-                
-                if (data.type === 'step') {
-                    markStepActive(data.step);
-                } else if (data.type === 'complete') {
-                    if (currentStep) markStepComplete(currentStep);
-                    finalStatus.classList.remove('hidden');
-                    
-                    const result = data.summary;
-                    if (result.status === 'success' || result.status === 'completed' || result.status === 'skipped_dry_run') {
-                        statusIcon.textContent = "check_circle";
-                        statusIcon.className = "material-symbols-outlined text-primary";
-                        statusText.className = "font-label-md text-primary";
-                        statusText.textContent = `Success! Processed reviews successfully.`;
-                    } else if (result.status === 'skipped_already_completed') {
-                        statusIcon.textContent = "info";
-                        statusIcon.className = "material-symbols-outlined text-primary";
-                        statusText.className = "font-label-md text-primary";
-                        statusText.textContent = "Skipped: Already completed.";
-                    }
-                    
-                    eventSource.close();
-                    btn.disabled = false;
-                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                } else if (data.type === 'error') {
-                    showError(data.error);
-                }
-            };
-            
-            eventSource.onerror = function() {
-                showError("Server connection error.");
-            };
         }
 
         async function loadLedger() {
@@ -723,7 +382,7 @@
                 
                 data.runs.forEach(run => {
                     const isSuccess = run.status === 'completed';
-                    const statusColor = isSuccess ? 'primary' : (run.status === 'failed' ? 'error' : 'surface-variant');
+                    const statusColor = isSuccess ? 'primary' : (run.status === 'failed' ? 'error' : 'on-surface-variant');
                     
                     grid.innerHTML += `
                     <div class="glass-level-1 rounded-2xl p-6 hover:border-${statusColor}/30 transition-all">
@@ -746,6 +405,119 @@
                 grid.innerHTML = '<p class="text-error">Failed to load ledger.</p>';
             }
         }
-</script>
-    <script>window.addEventListener("DOMContentLoaded", () => { switchTab("overview"); });</script>
-</body></html>
+
+        async function runPipeline() {
+            const btn = document.getElementById('runBtn');
+            const statusContainer = document.getElementById('statusContainer');
+            const statusText = document.getElementById('statusText');
+            const statusBar = document.getElementById('statusBar');
+            const statusPercent = document.getElementById('statusPercent');
+            const statusSpinner = document.getElementById('statusSpinner');
+            const successToast = document.getElementById('successToast');
+            
+            // Map steps to progress percentages
+            const stepProgress = {
+                'initializing': 10,
+                'ingestion': 30,
+                'analysis': 60,
+                'render': 80,
+                'delivery': 100
+            };
+
+            const stepNames = {
+                'initializing': 'Initializing Pipeline...',
+                'ingestion': 'Ingesting Play Store Data...',
+                'analysis': 'Running Analysis & LLM Summarization...',
+                'render': 'Rendering Report...',
+                'delivery': 'Delivering via MCP...'
+            };
+
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            
+            statusContainer.classList.remove('hidden');
+            statusSpinner.className = 'loading-spinner';
+            statusSpinner.innerHTML = '';
+            
+            statusBar.style.width = '0%';
+            statusPercent.textContent = '0%';
+            statusText.textContent = 'Starting...';
+            statusText.className = 'font-label-md text-label-md text-primary';
+            successToast.classList.add('hidden');
+
+            const payload = {
+                product: document.getElementById('productSelect').value,
+                iso_week: document.getElementById('isoWeekInput').value,
+                email_mode: document.querySelector('input[name="delivery"]:checked').value,
+                dry_run: document.getElementById('dryRunToggle').checked
+            };
+            
+            const queryParams = new URLSearchParams(payload).toString();
+            const eventSource = new EventSource(`/api/run/stream?${queryParams}`);
+            
+            function showError(errorMsg) {
+                statusSpinner.className = 'w-6 h-6 rounded-full bg-error/20 flex items-center justify-center';
+                statusSpinner.innerHTML = '<span class="material-symbols-outlined text-[14px] text-error">close</span>';
+                statusText.textContent = `Error: ${errorMsg || 'Pipeline failed'}`;
+                statusText.className = 'font-label-md text-label-md text-error';
+                
+                eventSource.close();
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                
+                // Show Error Toast
+                successToast.classList.remove('hidden');
+                document.getElementById('toastIcon').textContent = 'error';
+                document.getElementById('toastIcon').className = 'material-symbols-outlined text-error';
+                document.getElementById('toastTitle').textContent = 'Pipeline Failed';
+                document.getElementById('toastTitle').className = 'font-label-md text-label-md font-bold text-error';
+                document.getElementById('toastMessage').textContent = errorMsg || 'An unknown error occurred.';
+            }
+
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                
+                if (data.type === 'step') {
+                    const pct = stepProgress[data.step] || 0;
+                    statusBar.style.width = pct + '%';
+                    statusPercent.textContent = pct + '%';
+                    statusText.textContent = stepNames[data.step] || 'Processing...';
+                } else if (data.type === 'complete') {
+                    statusBar.style.width = '100%';
+                    statusPercent.textContent = '100%';
+                    
+                    const result = data.summary;
+                    
+                    statusSpinner.className = 'w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center';
+                    statusSpinner.innerHTML = '<span class="material-symbols-outlined text-[14px] text-primary">check</span>';
+                    
+                    if (result.status === 'success' || result.status === 'completed' || result.status === 'skipped_dry_run') {
+                        statusText.textContent = 'Completed Successfully';
+                        
+                        // Show Success Toast
+                        successToast.classList.remove('hidden');
+                        document.getElementById('toastIcon').textContent = 'check_circle';
+                        document.getElementById('toastIcon').className = 'material-symbols-outlined text-primary';
+                        document.getElementById('toastTitle').textContent = 'Pipeline Completed Successfully';
+                        document.getElementById('toastTitle').className = 'font-label-md text-label-md font-bold text-on-surface';
+                        document.getElementById('toastMessage').textContent = `Processed successfully.`;
+                        
+                    } else if (result.status === 'skipped_already_completed') {
+                        statusText.textContent = 'Skipped: Already Completed';
+                    }
+                    
+                    eventSource.close();
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else if (data.type === 'error') {
+                    showError(data.error);
+                }
+            };
+            
+            eventSource.onerror = function() {
+                showError("Server connection error.");
+            };
+        }
+    </script>
+</body>
+</html>

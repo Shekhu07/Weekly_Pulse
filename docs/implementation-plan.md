@@ -742,10 +742,10 @@ Per [edge-cases.md](edge-cases.md) (to be created):
 - Modify `execute_run` to accept an optional `progress_callback` parameter.
 - Invoke the callback at the start of each major phase: initializing, ingestion, analysis, render, delivery.
 
-#### 8.3 Stepper UI (`static/index.html`)
-- Implement a dynamic Stepper UI using CSS animations (glowing borders, spinners).
-- Use `EventSource` in JavaScript to listen to the SSE endpoint and update the UI in real-time.
-- Show a prominent success message upon completion.
+#### 8.3 Runner Hub UI (`static/index.html`)
+- Implement a modern, dark-themed Runner Hub UI using a dynamic progress bar for pipeline tracking.
+- Use `EventSource` in JavaScript to listen to the SSE endpoint and update the progress bar percentages in real-time.
+- Show a prominent success toast notification upon completion.
 
 ### Exit Criteria
 - [ ] User can trigger a run from the UI and see real-time step-by-step progress.
