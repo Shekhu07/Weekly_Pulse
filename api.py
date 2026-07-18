@@ -140,7 +140,7 @@ async def api_get_report(product: str, iso_week: str):
 
 @app.get("/")
 async def read_index():
-    return FileResponse("static/index.html")
+    return FileResponse("static/index.html", headers={"Cache-Control": "no-cache"})
 
 
 if __name__ == "__main__":
