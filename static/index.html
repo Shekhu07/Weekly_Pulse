@@ -1,697 +1,529 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Weekly Pulse Dashboard</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-    <!-- Tailwind Configuration -->
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "secondary-fixed-dim": "#c4c6ce",
-                        "inverse-on-surface": "#2e3037",
-                        "background": "#0E1117",
-                        "surface-tint": "#2fe0aa",
-                        "surface-dim": "#101319",
-                        "outline": "#85948c",
-                        "on-secondary-container": "#b6b8c0",
-                        "on-background": "#e1e2eb",
-                        "surface-container-highest": "#32353c",
-                        "on-tertiary": "#003828",
-                        "on-error-container": "#ffdad6",
-                        "on-primary-fixed-variant": "#00513b",
-                        "on-error": "#690005",
-                        "primary-container": "#00d09c",
-                        "tertiary-fixed": "#89f7ce",
-                        "surface-container-high": "#272a31",
-                        "error": "#ffb4ab",
-                        "surface-container-lowest": "#0b0e14",
-                        "on-primary": "#003828",
-                        "primary": "#44edb7",
-                        "tertiary": "#79e7bf",
-                        "error-container": "#93000a",
-                        "tertiary-fixed-dim": "#6cdab2",
-                        "on-secondary-fixed-variant": "#44474d",
-                        "surface": "#101319",
-                        "on-secondary-fixed": "#191c22",
-                        "inverse-surface": "#e1e2eb",
-                        "outline-variant": "#3c4a43",
-                        "tertiary-container": "#5ccba4",
-                        "secondary-container": "#464950",
-                        "on-tertiary-fixed-variant": "#00513c",
-                        "on-secondary": "#2d3037",
-                        "primary-fixed-dim": "#2fe0aa",
-                        "on-primary-container": "#00533c",
-                        "on-tertiary-fixed": "#002116",
-                        "on-surface": "#e1e2eb",
-                        "on-surface-variant": "#bacac1",
-                        "primary-fixed": "#59fdc5",
-                        "secondary": "#c4c6ce",
-                        "surface-container-low": "#191c22",
-                        "surface-bright": "#363940",
-                        "on-primary-fixed": "#002116",
-                        "secondary-fixed": "#e1e2ea",
-                        "on-tertiary-container": "#00533d",
-                        "surface-variant": "#32353c",
-                        "surface-container": "#1d2026",
-                        "inverse-primary": "#006c4f"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "margin-mobile": "16px",
-                        "unit": "8px",
-                        "margin-desktop": "40px",
-                        "gutter": "24px",
-                        "container-max": "1440px"
-                    },
-                    "fontFamily": {
-                        "headline-lg-mobile": ["Outfit"],
-                        "body-md": ["Inter"],
-                        "headline-md": ["Outfit"],
-                        "headline-lg": ["Outfit"],
-                        "body-lg": ["Inter"],
-                        "label-sm": ["Inter"],
-                        "label-md": ["Inter"],
-                        "headline-xl": ["Outfit"]
-                    },
-                    "fontSize": {
-                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
-                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
-                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
-                        "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
-                    }
-                },
-            },
-        }
-    </script>
-    <style>
-        body {
-            background-color: #0E1117;
-            color: #e1e2eb;
-            overflow-x: hidden;
-        }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Pulse Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-25..0&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0E1117; --bg2:#0B0E14; --card:#161A22; --card2:#12161F; --elev:#1D2230;
+    --line:rgba(255,255,255,0.06); --line2:rgba(255,255,255,0.09);
+    --text:#E6E8EE; --text-hi:#F3F5F8; --muted:#8A93A2; --muted2:#6D7686; --muted3:#7B8493;
+    --teal:#2FE0AA; --teal-hi:#5FF0C2; --teal-deep:#00C48F;
+    --pos:#45E0A8; --neg:#FF8B7E; --neu:#A9B2C0; --star:#F4C64A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
+  a{color:var(--teal);text-decoration:none;} a:hover{color:var(--teal-hi);}
+  h1,h2,h3,h4{margin:0;font-family:'Outfit',sans-serif;}
+  button{font-family:'Inter',sans-serif;}
+  .msym{font-family:'Material Symbols Outlined';font-weight:400;line-height:1;display:inline-block;vertical-align:middle;}
+  ::-webkit-scrollbar{width:8px;height:8px;} ::-webkit-scrollbar-thumb{background:#262c38;border-radius:8px;} ::-webkit-scrollbar-track{background:transparent;}
+  select option{background:var(--card);color:var(--text);}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes shimmer{0%{background-position:-400px 0;}100%{background-position:400px 0;}}
 
-        .glass-level-1 {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+  .shell{display:flex;min-height:100vh;}
+  .side{width:248px;flex-shrink:0;position:sticky;top:0;align-self:flex-start;height:100vh;background:var(--bg2);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:24px 16px;}
+  .brand{display:flex;align-items:center;gap:11px;padding:4px 8px 26px;}
+  .brand-mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#2FE0AA,#00A97C);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,208,156,0.35);}
+  .navlabel{font-size:10.5px;font-weight:600;letter-spacing:0.09em;color:#5A6373;text-transform:uppercase;padding:14px 10px 6px;}
+  .navbtn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px;border:none;background:transparent;color:var(--muted);font-size:14px;font-weight:500;border-radius:10px;cursor:pointer;transition:.15s;}
+  .navbtn:hover{background:rgba(255,255,255,0.04);color:#C7CEDA;}
+  .navbtn.active{background:rgba(47,224,170,0.11);color:var(--teal-hi);font-weight:600;}
+  .userbox{margin-top:auto;display:flex;align-items:center;gap:11px;padding:10px;border-radius:12px;background:var(--card2);border:1px solid rgba(255,255,255,0.05);}
+  .avatar{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#3A4256,#232A38);display:flex;align-items:center;justify-content:center;font-family:'Outfit';font-weight:600;font-size:14px;color:#CBD3E1;}
 
-        .glass-level-2 {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--line);background:rgba(14,17,23,0.82);backdrop-filter:blur(12px);position:sticky;top:0;z-index:30;}
+  .chip{display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:10px;background:var(--card2);border:1px solid var(--line);font-size:12.5px;color:var(--muted);}
+  .iconbtn{width:38px;height:38px;border-radius:10px;background:var(--card2);border:1px solid var(--line);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .iconbtn:hover{color:var(--teal);}
 
-        .teal-gradient {
-            background: linear-gradient(135deg, #00D09C 0%, #008F6C 100%);
-        }
+  .page{padding:28px 32px 44px;display:flex;flex-direction:column;gap:22px;animation:fade .4s ease;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;}
+  .run-card{background:linear-gradient(180deg,#161B25,#12161F);border:1px solid var(--line2);border-radius:18px;padding:20px 22px;}
+  .fieldlabel{display:block;font-size:11px;font-weight:600;letter-spacing:0.03em;color:var(--muted3);margin-bottom:7px;}
+  .inp{width:100%;appearance:none;background:var(--bg);border:1px solid var(--line2);border-radius:11px;padding:11px 13px;color:var(--text);font-family:'Inter';font-size:14px;}
+  .inp:focus{outline:none;border-color:var(--teal);}
+  .selwrap{position:relative;}
+  .selwrap .msym{position:absolute;right:10px;top:11px;font-size:20px;color:var(--muted2);pointer-events:none;}
+  .stepper{display:flex;align-items:center;background:var(--bg);border:1px solid var(--line2);border-radius:11px;padding:3px;}
+  .stepper button{width:32px;height:32px;border:none;background:transparent;color:var(--muted);border-radius:8px;cursor:pointer;font-size:18px;}
+  .stepper button:hover{background:var(--elev);color:var(--text);}
+  .stepper .val{flex:1;text-align:center;font-family:'Outfit';font-weight:600;font-size:14px;color:var(--text);}
+  .seg{display:flex;background:var(--bg);border:1px solid var(--line2);border-radius:11px;padding:3px;}
+  .seg button{flex:1;padding:8px 16px;border:none;background:transparent;color:var(--muted);border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;}
+  .seg button.on{background:#1E2A26;color:var(--teal-hi);}
+  .toggle{width:40px;height:23px;border-radius:20px;border:none;cursor:pointer;padding:0;position:relative;background:#2A3240;transition:background .2s;}
+  .toggle.on{background:var(--teal);}
+  .toggle .knob{position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:#fff;transition:left .2s;}
+  .toggle.on .knob{left:20px;}
+  .runbtn{display:flex;align-items:center;gap:7px;padding:11px 22px;border:none;border-radius:11px;cursor:pointer;font-size:14px;font-weight:600;color:#04231A;background:linear-gradient(135deg,#2FE0AA,#00C48F);box-shadow:0 4px 16px rgba(0,208,156,0.32);transition:.15s;}
+  .runbtn:disabled{opacity:.55;cursor:default;}
 
-        .glow-hover:hover {
-            box-shadow: 0px 0px 20px rgba(0, 208, 156, 0.4);
-            transform: translateY(-1px);
-        }
+  .stat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+  .stat{padding:17px 18px;}
+  .stat .k{font-size:11px;font-weight:600;letter-spacing:0.05em;color:var(--muted3);text-transform:uppercase;}
+  .stat .v{font-family:'Outfit';font-weight:600;font-size:30px;color:var(--text-hi);margin:8px 0 6px;letter-spacing:-0.02em;}
+  .delta{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:600;}
+  .delta.up{color:var(--pos);} .delta.down{color:var(--neg);} .delta.flat{color:var(--muted);}
+  .delta .sub{color:var(--muted2);font-weight:500;margin-left:2px;}
 
-        .pulse-dot {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
+  .chart-grid{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:16px;}
+  .chart-card{padding:18px 20px;}
+  .chart-card .ct{font-family:'Outfit';font-weight:600;font-size:14px;color:var(--text);}
+  .chart-card .cs{font-size:12px;color:var(--muted2);margin:2px 0 12px;}
+  .chart-box{height:172px;position:relative;}
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: .5; transform: scale(1.2); }
-        }
+  .two-col{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:start;}
+  .sec-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line);}
+  .theme-row{display:flex;gap:14px;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:.15s;}
+  .theme-row:last-child{border-bottom:none;}
+  .theme-row:hover{background:rgba(255,255,255,0.02);}
+  .theme-ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .pill{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px;}
+  .pill .dot{width:5px;height:5px;border-radius:50%;}
+  .tag{font-size:11px;color:var(--muted);background:var(--elev);padding:3px 9px;border-radius:6px;}
+  .quote{border-left:2.5px solid var(--muted);padding:2px 0 2px 13px;}
+  .quote .qt{font-size:13.5px;color:#D7DBE3;line-height:1.55;font-style:italic;}
+  .quote .qm{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:11px;color:var(--muted2);}
 
-        .loading-spinner {
-            border: 2px solid rgba(0, 208, 156, 0.1);
-            border-left-color: #00D09C;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-        }
+  .ledger-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .run-status{font-size:11px;font-weight:600;padding:4px 11px;border-radius:20px;}
+  .rs-ok{color:var(--pos);background:rgba(69,224,168,0.12);border:1px solid rgba(69,224,168,0.2);}
+  .rs-bad{color:var(--neg);background:rgba(255,139,126,0.12);border:1px solid rgba(255,139,126,0.2);}
+  .rs-neu{color:var(--muted);background:rgba(169,178,192,0.1);border:1px solid rgba(169,178,192,0.18);}
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+  .prog{display:flex;align-items:center;gap:14px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line);}
+  .spinner{width:18px;height:18px;border:2px solid rgba(47,224,170,0.2);border-left-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
+  .bar-track{height:6px;border-radius:6px;background:var(--elev);overflow:hidden;}
+  .bar-fill{height:100%;background:linear-gradient(90deg,#00A97C,#2FE0AA);border-radius:6px;transition:width .4s ease;}
 
-        /* Custom radio styling */
-        .custom-radio:checked + label {
-            background: rgba(0, 208, 156, 0.1);
-            border-color: #00D09C;
-            color: #44edb7;
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  .skel{background:linear-gradient(90deg,#1a1f29 0px,#232a36 200px,#1a1f29 400px);background-size:800px 100%;animation:shimmer 1.3s linear infinite;border-radius:8px;}
+  .empty{display:flex;flex-direction:column;align-items:center;text-align:center;padding:52px 24px;color:var(--muted);}
+  .empty .msym{font-size:44px;color:#3a4452;margin-bottom:12px;}
+  .toast{position:fixed;bottom:28px;right:28px;z-index:60;max-width:360px;animation:fade .4s ease;}
+  .toast-inner{background:var(--card);border:1px solid rgba(47,224,170,0.3);border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 12px 40px rgba(0,0,0,0.4);}
+  .hidden{display:none !important;}
+</style>
 </head>
-<body class="font-body-md text-body-md">
-    <!-- Global Layout Shell -->
-    <div class="flex min-h-screen">
-        <!-- SideNavBar -->
-        <aside class="h-screen w-72 fixed left-0 top-0 bg-surface-container-low/50 backdrop-blur-[10px] border-r border-outline-variant/10 flex flex-col py-margin-desktop px-unit z-50">
-            <div class="mb-10 px-4 cursor-pointer" onclick="switchTab('home')">
-                <h1 class="font-headline-lg text-headline-lg font-semibold text-primary">Weekly Pulse</h1>
-                <p class="font-label-md text-label-md text-on-surface-variant">Data Analytics</p>
-            </div>
-            
-            <!-- Configuration Section -->
-            <div class="flex-1 space-y-8 px-4 overflow-y-auto">
-                <div>
-                    <label class="block font-label-md text-label-md text-on-surface-variant mb-2">Product</label>
-                    <div class="relative">
-                        <select id="productSelect" class="w-full glass-level-1 rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-primary text-on-surface transition-all">
-                            <option value="groww">Groww</option>
-                            <option value="ledger">Ledger Pro</option>
-                            <option value="runner">Runner X</option>
-                        </select>
-                        <span class="material-symbols-outlined absolute right-3 top-3 text-on-surface-variant pointer-events-none">expand_more</span>
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block font-label-md text-label-md text-on-surface-variant mb-2">ISO Week</label>
-                    <input id="isoWeekInput" class="w-full bg-surface-container-low/80 rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-on-surface transition-all border border-outline-variant/30" placeholder="YYYY-WXX" type="text" value="2026-W35">
-                </div>
-                
-                <div>
-                    <label class="block font-label-md text-label-md text-on-surface-variant mb-3">Delivery Options</label>
-                    <div class="flex glass-level-1 rounded-xl p-1">
-                        <div class="flex-1">
-                            <input checked="" class="hidden custom-radio" id="delivery-draft" name="delivery" value="draft" type="radio">
-                            <label class="flex items-center justify-center py-2 rounded-lg cursor-pointer transition-all font-label-md text-label-md text-on-surface-variant" for="delivery-draft">Draft</label>
-                        </div>
-                        <div class="flex-1">
-                            <input class="hidden custom-radio" id="delivery-send" name="delivery" value="send" type="radio">
-                            <label class="flex items-center justify-center py-2 rounded-lg cursor-pointer transition-all font-label-md text-label-md text-on-surface-variant" for="delivery-send">Send</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="flex items-center justify-between glass-level-1 p-4 rounded-xl">
-                    <span class="font-label-md text-label-md text-on-surface">Dry Run (Skip Delivery)</span>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input id="dryRunToggle" class="sr-only peer" type="checkbox">
-                        <div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
-                    </label>
-                </div>
-            </div>
-            
-            <!-- Footer Nav -->
-            <div class="mt-auto space-y-2 px-4 pt-4">
-                <div class="mb-6 pt-4 border-t border-outline-variant/10">
-                    <h4 class="px-4 mb-2 font-label-md text-label-md font-bold text-primary uppercase tracking-wider">Historical Ledger</h4>
-                    <div class="space-y-2">
-                        <button onclick="switchTab('home')" id="btn-overview" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all group">
-                            <span class="material-symbols-outlined text-[20px]">dashboard</span>
-                            Home
-                        </button>
-                        <button onclick="switchTab('ledger')" id="btn-ledger" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all group">
-                            <span class="material-symbols-outlined text-[20px]">receipt_long</span>
-                            View History
-                        </button>
-                    </div>
-                </div>
-                
-                <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all group">
-                    <span class="material-symbols-outlined text-[20px]">help</span>
-                    Support
-                </button>
-                <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all">
-                    <span class="material-symbols-outlined text-[20px]">person</span>
-                    Account
-                </button>
-            </div>
-        </aside>
+<body>
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <div class="brand">
+      <div class="brand-mark"><span class="msym" style="font-size:21px;color:#04231A;">graphic_eq</span></div>
+      <div>
+        <div style="font-family:'Outfit';font-weight:600;font-size:16px;color:var(--text-hi);letter-spacing:-0.01em;">Weekly Pulse</div>
+        <div style="font-size:11px;color:var(--muted2);">Groww · Fintech</div>
+      </div>
+    </div>
+    <nav style="display:flex;flex-direction:column;gap:2px;">
+      <div class="navlabel">Workspace</div>
+      <button class="navbtn active" id="nav-dashboard" onclick="switchTab('home')"><span class="msym" style="font-size:20px;">space_dashboard</span>Dashboard</button>
+      <button class="navbtn" id="nav-history" onclick="switchTab('ledger')"><span class="msym" style="font-size:20px;">history</span>Run History</button>
+      <button class="navbtn"><span class="msym" style="font-size:20px;">description</span>Reports</button>
+      <button class="navbtn"><span class="msym" style="font-size:20px;">tune</span>Configuration</button>
+      <div class="navlabel">Support</div>
+      <button class="navbtn"><span class="msym" style="font-size:20px;">help</span>Help &amp; Docs</button>
+    </nav>
+    <div class="userbox">
+      <div class="avatar">AK</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Ananya Kapoor</div>
+        <div style="font-size:11px;color:var(--muted2);">Product Analyst</div>
+      </div>
+      <span class="msym" style="font-size:18px;color:var(--muted2);">unfold_more</span>
+    </div>
+  </aside>
 
-        <!-- Main Content Area -->
-        <main class="flex-1 ml-72 min-h-screen bg-background relative">
-            <!-- Background Decoration -->
-            <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10"></div>
-            
-            <!-- TopAppBar -->
-            <header class="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max mx-auto bg-surface-dim/80 backdrop-blur-[20px] sticky top-0 z-40 border-b border-outline-variant/5">
-                <div class="flex items-center gap-4">
-                    <span class="material-symbols-outlined text-primary pulse-dot">monitoring</span>
-                    <h2 class="font-headline-md text-headline-md font-bold text-primary">Runner Hub</h2>
-                </div>
-                <div class="flex items-center gap-6">
-                                        <div class="flex items-center gap-4" id="header-pipeline-runner">
-                        <button id="runBtn" onclick="runPipeline()" class="teal-gradient text-white font-label-md px-6 py-2 rounded-full flex items-center gap-2 transition-all glow-hover active:scale-95 whitespace-nowrap shadow-lg">
-                            <span class="material-symbols-outlined text-[18px]">play_arrow</span>
-                            Run Pipeline
-                        </button>
-                        <!-- Status Display (Dynamically updated via SSE) -->
-                        <div id="statusContainer" class="hidden glass-level-2 rounded-full px-4 py-1.5 flex items-center gap-3 min-w-[280px] border border-primary/20">
-                            <div id="statusSpinner" class="loading-spinner !w-4 !h-4 !border-2"></div>
-                            <div class="flex-1 flex flex-col justify-center">
-                                <div class="flex justify-between items-center mb-1">
-                                    <span id="statusText" class="text-[10px] font-bold text-primary tracking-wider uppercase truncate max-w-[150px]">Processing...</span>
-                                    <span id="statusPercent" class="text-[10px] text-primary font-bold">0%</span>
-                                </div>
-                                <div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
-                                    <div id="statusBar" class="bg-primary h-full w-[0%] rounded-full shadow-[0_0_8px_rgba(68,237,183,0.6)] transition-all duration-300"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex gap-4">
-                        <button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
-                        <button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">history</button>
-                    </div>
-                    <div class="w-10 h-10 rounded-full border-2 border-primary/20 overflow-hidden">
-                        <img class="w-full h-full object-cover" data-alt="Profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUQDDEwb4rNcvsbVcubeDVsVoha_qUH8RDYnLWb13REc93yib_5td68kgaALCjw88WZWuWv2vCKZ2lpe1NBrUU2XrVrONZ_wB0hW2A_Ro0sCViHPPOuTrUMnrfjsqvr8H6FjhqomfjoA3JDs2VOuWgSS5xfZt_y1q7zfqt1jseL2RzGEkUCEdJRg2d_1g7ShQjlYl9qrg4cXKCdqku6_cdu0IBhMlYnU-Vw8o5VlUsgkgZxFNmxDCqyZQsltLllnCKCMzJjTHtBETs">
-                    </div>
-                </div>
-            </header>
+  <!-- MAIN -->
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h1 id="pageTitle" style="font-weight:600;font-size:22px;letter-spacing:-0.02em;color:var(--text-hi);">Dashboard</h1>
+        <div id="pageSub" style="font-size:13px;color:var(--muted3);margin-top:2px;">Groww · Weekly review pulse</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="chip"><span style="width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 3px rgba(47,224,170,0.18);"></span>MCP connected</div>
+        <button class="iconbtn"><span class="msym" style="font-size:20px;">notifications</span></button>
+      </div>
+    </header>
 
-            <!-- Dashboard Content -->
-            <div class="px-margin-desktop py-10 max-w-container-max mx-auto">
-                
-                <!-- Page Title -->
-                <div class="mb-8">
-                    <h1 class="font-headline-xl text-headline-xl text-on-surface">Weekly Pulse Dashboard</h1>
-                    <p class="font-body-lg text-body-lg text-on-surface-variant mt-2 max-w-2xl">Manage your automated data pipelines and monitor historical ingestion performance across the organization.</p>
-                </div>
-                
-                <!-- Tab: Overview -->
-                <div class="space-y-8 animate-in fade-in duration-500" id="content-overview">
-    <!-- Top Stats -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div class="glass-level-1 p-4 rounded-2xl flex flex-col items-center">
-            <span class="text-on-surface-variant text-label-sm tracking-wider uppercase">Analyzed</span>
-            <span class="text-headline-md text-primary font-bold mt-1" id="stat-analyzed">-</span>
+    <!-- ===== DASHBOARD ===== -->
+    <div class="page" id="content-overview">
+      <!-- Run a Pulse -->
+      <section class="run-card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+          <span class="msym" style="font-size:20px;color:var(--teal);">bolt</span>
+          <h2 style="font-weight:600;font-size:15px;color:var(--text-hi);">Run a Pulse</h2>
+          <span style="font-size:12px;color:var(--muted2);">Ingest reviews, cluster themes, and deliver the weekly report.</span>
         </div>
-        <div class="glass-level-1 p-4 rounded-2xl flex flex-col items-center">
-            <span class="text-on-surface-variant text-label-sm tracking-wider uppercase">Sources</span>
-            <span class="text-headline-md text-primary font-bold mt-1" id="stat-sources">2</span>
+        <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:150px;">
+            <label class="fieldlabel">PRODUCT</label>
+            <div class="selwrap">
+              <select id="productSelect" class="inp" style="padding-right:34px;cursor:pointer;">
+                <option value="groww">Groww</option>
+                <option value="ledger">Ledger Pro</option>
+                <option value="runner">Runner X</option>
+              </select>
+              <span class="msym">expand_more</span>
+            </div>
+          </div>
+          <div style="flex:1;min-width:150px;">
+            <label class="fieldlabel">ISO WEEK</label>
+            <div class="stepper">
+              <button type="button" onclick="shiftWeek(-1)">−</button>
+              <div class="val" id="weekVal">2026-W35</div>
+              <button type="button" onclick="shiftWeek(1)">+</button>
+            </div>
+            <input id="isoWeekInput" type="hidden" value="2026-W35">
+          </div>
+          <div style="min-width:170px;">
+            <label class="fieldlabel">DELIVERY</label>
+            <div class="seg" id="deliverySeg">
+              <button type="button" class="on" data-mode="draft" onclick="setDelivery('draft')">Draft</button>
+              <button type="button" data-mode="send" onclick="setDelivery('send')">Send</button>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:9px;padding:0 4px 9px;">
+            <button type="button" id="dryToggle" class="toggle" onclick="toggleDry()"><span class="knob"></span></button>
+            <span style="font-size:13px;color:var(--muted);white-space:nowrap;">Dry run</span>
+          </div>
+          <button id="runBtn" class="runbtn" onclick="runPipeline()"><span class="msym" id="runIcon" style="font-size:19px;">play_arrow</span><span id="runLabel">Run Pulse</span></button>
         </div>
-        <div class="glass-level-1 p-4 rounded-2xl flex flex-col items-center">
-            <span class="text-on-surface-variant text-label-sm tracking-wider uppercase">Themes</span>
-            <span class="text-headline-md text-primary font-bold mt-1" id="stat-themes">-</span>
+        <div class="prog hidden" id="progWrap">
+          <div class="spinner" id="progSpin"></div>
+          <div style="flex:1;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <span style="font-size:12px;font-weight:600;color:var(--teal);" id="progLabel">Starting…</span>
+              <span style="font-size:12px;font-weight:600;color:var(--teal);" id="progPct">0%</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" id="progBar" style="width:0%;"></div></div>
+          </div>
         </div>
-        <div class="glass-level-1 p-4 rounded-2xl flex flex-col items-center">
-            <span class="text-on-surface-variant text-label-sm tracking-wider uppercase">Validated</span>
-            <span class="text-headline-md text-primary font-bold mt-1" id="stat-validated">-</span>
+      </section>
+
+      <!-- Stats -->
+      <section class="stat-grid" id="statGrid">
+        <div class="card stat"><div class="k">Reviews Analyzed</div><div class="v" id="stat-analyzed">—</div><div id="delta-analyzed"></div></div>
+        <div class="card stat"><div class="k">Themes Found</div><div class="v" id="stat-themes">—</div><div id="delta-themes"></div></div>
+        <div class="card stat"><div class="k">Validated Quotes</div><div class="v" id="stat-validated">—</div><div id="delta-validated"></div></div>
+        <div class="card stat"><div class="k">Avg Rating</div><div class="v" id="stat-rating">—</div><div id="delta-rating"></div></div>
+        <div class="card stat"><div class="k">Active Sources</div><div class="v" id="stat-sources">—</div><div id="delta-sources"></div></div>
+      </section>
+
+      <!-- Charts -->
+      <section class="chart-grid">
+        <div class="card chart-card"><div class="ct">Review Volume</div><div class="cs">Recent runs</div><div class="chart-box"><canvas id="volumeChart"></canvas></div></div>
+        <div class="card chart-card"><div class="ct">Rating Distribution</div><div class="cs">This week</div><div class="chart-box"><canvas id="ratingChart"></canvas></div></div>
+        <div class="card chart-card"><div class="ct">Sentiment Split</div><div class="cs">Filtered reviews</div><div class="chart-box"><canvas id="sentimentChart"></canvas></div></div>
+      </section>
+
+      <!-- Themes + Quotes -->
+      <section class="two-col">
+        <div class="card" style="overflow:hidden;">
+          <div class="sec-head"><h3 style="font-weight:600;font-size:15px;color:var(--text-hi);">Primary Themes</h3><span style="font-size:12px;color:var(--muted2);">Ranked by volume</span></div>
+          <div id="themesList"></div>
         </div>
-        <div class="glass-level-1 p-4 rounded-2xl flex flex-col items-center">
-            <span class="text-on-surface-variant text-label-sm tracking-wider uppercase">Avg Rating</span>
-            <span class="text-headline-md text-primary font-bold mt-1" id="stat-rating">-</span>
+        <div class="card" style="overflow:hidden;">
+          <div class="sec-head"><h3 style="font-weight:600;font-size:15px;color:var(--text-hi);">Highlight Quotes</h3></div>
+          <div id="quotesGrid" style="display:flex;flex-direction:column;gap:12px;padding:16px 20px;"></div>
         </div>
+      </section>
     </div>
 
-    <!-- Charts -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
-        <div class="glass-level-1 p-6 rounded-3xl border border-outline-variant/10 flex flex-col">
-            <h3 class="font-label-md text-label-md font-bold mb-4">Source Breakdown</h3>
-            <div class="flex-1 relative min-h-[200px]">
-                <canvas id="sourceChart"></canvas>
-            </div>
-        </div>
-        <div class="glass-level-1 p-6 rounded-3xl border border-outline-variant/10 flex flex-col">
-            <h3 class="font-label-md text-label-md font-bold mb-4">Rating Distribution</h3>
-            <div class="flex-1 relative min-h-[200px]">
-                <canvas id="ratingChart"></canvas>
-            </div>
-        </div>
-        <div class="glass-level-1 p-6 rounded-3xl border border-outline-variant/10 flex flex-col">
-            <h3 class="font-label-md text-label-md font-bold mb-4">Filtered Sentiment</h3>
-            <div class="flex-1 relative min-h-[200px]">
-                <canvas id="sentimentChart"></canvas>
-            </div>
-        </div>
+    <!-- ===== HISTORY ===== -->
+    <div class="page hidden" id="content-ledger">
+      <div class="ledger-grid" id="ledgerGrid"></div>
     </div>
-
-    <!-- Themes -->
-    <div class="glass-level-1 rounded-3xl border border-outline-variant/10 overflow-hidden">
-        <div class="p-6 border-b border-outline-variant/10">
-            <h3 class="font-headline-md text-headline-md font-bold text-on-surface">Primary Themes</h3>
-        </div>
-        <div id="themesList" class="divide-y divide-outline-variant/10">
-            <p class="p-6 text-on-surface-variant">Loading themes...</p>
-        </div>
-    </div>
-    
-    <!-- Highlight Quotes -->
-    <div class="glass-level-1 rounded-3xl border border-outline-variant/10 overflow-hidden">
-        <div class="p-6 border-b border-outline-variant/10">
-            <h3 class="font-headline-md text-headline-md font-bold text-on-surface">Highlight Quotes</h3>
-        </div>
-        <div id="quotesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
-            <p class="text-on-surface-variant">Loading quotes...</p>
-        </div>
-    </div>
+  </main>
 </div>
 
-                <!-- Tab: Ledger -->
-                <div class="hidden space-y-6 animate-in fade-in duration-500" id="content-ledger">
-                    <div id="ledgerGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-                        <!-- Ledger items inserted here dynamically -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Success Toast (Hidden by default) -->
-            <div id="successToast" class="hidden fixed bottom-8 right-8 z-50 max-w-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div class="glass-level-2 rounded-2xl p-4 border border-primary/30 shadow-lg flex items-start gap-4">
-                    <div class="bg-primary/10 p-2 rounded-full">
-                        <span id="toastIcon" class="material-symbols-outlined text-primary">check_circle</span>
-                    </div>
-                    <div class="flex-1">
-                        <h4 id="toastTitle" class="font-label-md text-label-md font-bold text-on-surface">Pipeline Completed Successfully</h4>
-                        <p id="toastMessage" class="text-label-sm text-on-surface-variant mt-1">Processed and delivered.</p>
-                    </div>
-                    <button class="text-on-surface-variant hover:text-on-surface transition-colors" onclick="document.getElementById('successToast').classList.add('hidden')">
-                        <span class="material-symbols-outlined text-[18px]">close</span>
-                    </button>
-                </div>
-            </div>
-
-        </main>
+<!-- Toast -->
+<div class="toast hidden" id="toast">
+  <div class="toast-inner">
+    <div style="background:rgba(47,224,170,0.12);padding:8px;border-radius:10px;"><span class="msym" id="toastIcon" style="color:var(--teal);">check_circle</span></div>
+    <div style="flex:1;">
+      <h4 id="toastTitle" style="font-size:14px;font-weight:600;color:var(--text);">Pipeline completed</h4>
+      <p id="toastMsg" style="margin:3px 0 0;font-size:12px;color:var(--muted);">Processed and delivered.</p>
     </div>
+    <button class="iconbtn" style="width:26px;height:26px;background:transparent;border:none;" onclick="document.getElementById('toast').classList.add('hidden')"><span class="msym" style="font-size:18px;">close</span></button>
+  </div>
+</div>
 
-    <!-- Scripts -->
-    <script>
-        document.getElementById('productSelect').addEventListener('change', () => {
-            if (!document.getElementById('content-overview').classList.contains('hidden')) loadOverview();
-        });
-        document.getElementById('isoWeekInput').addEventListener('change', () => {
-            if (!document.getElementById('content-overview').classList.contains('hidden')) loadOverview();
-        });
+<script>
+const charts = {};
+let currentWeek = '2026-W35';
+let delivery = 'draft';
+let dryRun = false;
 
-        let charts = {};
-        
-        function initChart(id, type, data, options) {
-            const ctx = document.getElementById(id);
-            if (charts[id]) charts[id].destroy();
-            charts[id] = new Chart(ctx, { type, data, options });
-        }
+/* ---------- config controls ---------- */
+function parseWeek(w){ const m=/^(\d{4})-W(\d{2})$/.exec(w); return m?{y:+m[1],n:+m[2]}:{y:2026,n:35}; }
+function fmtWeek(y,n){ return `${y}-W${String(n).padStart(2,'0')}`; }
+function shiftWeek(d){
+  let {y,n}=parseWeek(currentWeek); n+=d;
+  if(n>52){n=1;y++;} if(n<1){n=52;y--;}
+  currentWeek=fmtWeek(y,n);
+  document.getElementById('weekVal').textContent=currentWeek;
+  document.getElementById('isoWeekInput').value=currentWeek;
+  if(!document.getElementById('content-overview').classList.contains('hidden')) loadOverview();
+}
+function setDelivery(m){
+  delivery=m;
+  document.querySelectorAll('#deliverySeg button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));
+}
+function toggleDry(){ dryRun=!dryRun; document.getElementById('dryToggle').classList.toggle('on',dryRun); }
+document.getElementById('productSelect').addEventListener('change',()=>{
+  if(!document.getElementById('content-overview').classList.contains('hidden')) loadOverview();
+});
 
+/* ---------- charts ---------- */
+function initChart(id,cfg){
+  const el=document.getElementById(id); if(!el) return;
+  if(charts[id]) charts[id].destroy();
+  charts[id]=new Chart(el,cfg);
+}
+Chart.defaults.color='#8A93A2';
+Chart.defaults.font.family='Inter';
+Chart.defaults.borderColor='rgba(255,255,255,0.05)';
 
-async function loadOverview() {
-            const product = document.getElementById('productSelect').value;
-            const week = document.getElementById('isoWeekInput').value;
-            try {
-                const res = await fetch(`/api/report?product=${product}&iso_week=${week}`);
-                const data = await res.json();
-                
-                if (data.status === 'error') {
-                    document.getElementById('stat-analyzed').textContent = 'N/A';
-                    document.getElementById('themesList').innerHTML = `<p class="p-6 text-error">${data.error}</p>`;
-                    return;
-                }
+/* ---------- helpers ---------- */
+function sentInfo(s){
+  const v=(s||'').toUpperCase();
+  if(v.startsWith('POS')) return {color:'var(--pos)',bg:'rgba(69,224,168,0.12)',ic:'trending_up',label:'Positive'};
+  if(v.startsWith('NEG')) return {color:'var(--neg)',bg:'rgba(255,139,126,0.13)',ic:'trending_down',label:'Negative'};
+  return {color:'var(--neu)',bg:'rgba(169,178,192,0.12)',ic:'trending_flat',label:'Neutral'};
+}
+function deltaHtml(pct,sub){
+  if(pct===null||pct===undefined||!isFinite(pct)) return '';
+  const cls=pct>0?'up':(pct<0?'down':'flat');
+  const ic=pct>0?'arrow_upward':(pct<0?'arrow_downward':'trending_flat');
+  const val=Math.abs(pct).toFixed(pct%1===0?0:1);
+  return `<div class="delta ${cls}"><span class="msym" style="font-size:15px;">${ic}</span>${val}%<span class="sub">${sub}</span></div>`;
+}
+function skelStats(){
+  ['analyzed','themes','validated','rating','sources'].forEach(k=>{
+    document.getElementById('stat-'+k).innerHTML='<span class="skel" style="display:inline-block;width:56px;height:26px;"></span>';
+    document.getElementById('delta-'+k).innerHTML='';
+  });
+  document.getElementById('themesList').innerHTML='<div style="padding:16px 20px;"><div class="skel" style="height:52px;margin-bottom:10px;"></div><div class="skel" style="height:52px;margin-bottom:10px;"></div><div class="skel" style="height:52px;"></div></div>';
+  document.getElementById('quotesGrid').innerHTML='<div class="skel" style="height:60px;"></div><div class="skel" style="height:60px;"></div>';
+}
+function emptyOverview(msg){
+  ['analyzed','themes','validated','rating','sources'].forEach(k=>{document.getElementById('stat-'+k).textContent='—';document.getElementById('delta-'+k).innerHTML='';});
+  ['volumeChart','ratingChart','sentimentChart'].forEach(id=>{if(charts[id])charts[id].destroy();});
+  document.getElementById('themesList').innerHTML=`<div class="empty"><span class="msym">insights</span><div style="font-weight:600;color:#C7CEDA;font-size:15px;margin-bottom:4px;">No pulse for ${currentWeek} yet</div><div style="font-size:13px;max-width:280px;">${msg||'Run the pipeline for this week to generate themes, quotes, and charts.'}</div></div>`;
+  document.getElementById('quotesGrid').innerHTML='<div class="empty" style="padding:32px 12px;"><span class="msym" style="font-size:34px;">format_quote</span><div style="font-size:13px;">Quotes appear after a run.</div></div>';
+}
 
-                // Stats
-                document.getElementById('stat-analyzed').textContent = data.review_count || 0;
-                document.getElementById('stat-themes').textContent = data.themes ? data.themes.length : 0;
-                
-                let validatedQuotes = 0;
-                let totalRating = 0;
-                let ratingCount = 0;
-                
-                if (data.rating_distribution) {
-                    for (let i=1; i<=5; i++) {
-                        let c = data.rating_distribution[i] || 0;
-                        totalRating += i * c;
-                        ratingCount += c;
-                    }
-                }
-                const avgRating = ratingCount > 0 ? (totalRating / ratingCount).toFixed(2) : '-';
-                document.getElementById('stat-rating').textContent = `${avgRating}★`;
+/* ---------- overview ---------- */
+async function loadOverview(){
+  const product=document.getElementById('productSelect').value;
+  const week=currentWeek;
+  document.getElementById('pageSub').textContent=`${document.getElementById('productSelect').selectedOptions[0].text} · Week ${week}`;
+  skelStats();
 
-                // Charts
-                Chart.defaults.color = '#e1e2eb';
-                Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+  // ledger (used for volume trend + reviews delta) — non-blocking
+  let ledgerRuns=[];
+  try{ const lr=await fetch('/api/ledger'); const lj=await lr.json(); ledgerRuns=(lj.runs||[]).filter(r=>r.product===product); }catch(e){}
 
-                // Source Chart (Fake data for now since backend doesn't store source breakdown yet)
-                initChart('sourceChart', 'doughnut', {
-                    labels: ['App Store', 'Play Store'],
-                    datasets: [{
-                        data: [15, 85],
-                        backgroundColor: ['#00D09C', '#2d3037'],
-                        borderWidth: 0
-                    }]
-                }, { maintainAspectRatio: false });
+  let data;
+  try{
+    const res=await fetch(`/api/report?product=${product}&iso_week=${week}`);
+    data=await res.json();
+  }catch(e){ emptyOverview('Could not reach the server.'); return; }
 
-                // Rating Chart
-                const rd = data.rating_distribution || {};
-                initChart('ratingChart', 'bar', {
-                    labels: ['5★', '4★', '3★', '2★', '1★'],
-                    datasets: [{
-                        data: [rd[5]||0, rd[4]||0, rd[3]||0, rd[2]||0, rd[1]||0],
-                        backgroundColor: '#44edb7',
-                        borderRadius: 4
-                    }]
-                }, { maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } } });
+  if(!data || data.status==='error'){ emptyOverview(data && data.error); buildVolume(ledgerRuns); return; }
 
-                // Sentiment Chart
-                const sd = data.sentiment_distribution || {};
-                initChart('sentimentChart', 'bar', {
-                    labels: ['Positive', 'Neutral', 'Negative'],
-                    datasets: [{
-                        data: [sd['Positive']||0, sd['Neutral']||0, sd['Negative']||0],
-                        backgroundColor: ['#44edb7', '#c4c6ce', '#ffb4ab'],
-                        borderRadius: 4
-                    }]
-                }, { maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } } });
+  // stats
+  const reviewCount=data.review_count||0;
+  const themes=data.themes||[];
+  let validated=0; themes.forEach(t=>validated+=(t.quotes?t.quotes.length:0));
+  const rd=data.rating_distribution||{};
+  let tot=0,cnt=0; for(let i=1;i<=5;i++){const c=rd[i]||0; tot+=i*c; cnt+=c;}
+  const avg=cnt>0?(tot/cnt).toFixed(2):null;
+  const sd=data.sentiment_distribution||{};
+  const srcDist=data.source_distribution||null;
+  const sources=srcDist?Object.keys(srcDist).length:(data.sources||'—');
 
-                // Themes
-                let themesHtml = '';
-                let quotesHtml = '';
-                if (data.themes) {
-                    data.themes.forEach(t => {
-                        validatedQuotes += (t.quotes ? t.quotes.length : 0);
-                        let sentimentColor = t.sentiment === 'NEGATIVE' ? 'error' : (t.sentiment === 'POSITIVE' ? 'primary' : 'secondary');
-                        themesHtml += `
-                        <div class="p-6 hover:bg-white/5 transition-colors cursor-pointer group">
-                            <div class="flex items-start gap-4">
-                                <span class="bg-${sentimentColor}/20 text-${sentimentColor} px-2 py-1 rounded text-label-sm font-bold">[${t.sentiment}]</span>
-                                <div class="flex-1">
-                                    <h4 class="font-headline-md text-[18px] text-primary group-hover:text-primary-fixed">${t.theme_name}</h4>
-                                    <p class="text-on-surface-variant mt-2">${t.summary}</p>
-                                    <div class="flex gap-2 mt-3">
-                                        ${(t.teams || []).map(team => `<span class="bg-surface-variant/50 px-2 py-1 rounded text-[12px]">${team}</span>`).join('')}
-                                    </div>
-                                </div>
-                                <span class="material-symbols-outlined text-on-surface-variant group-hover:text-white">chevron_right</span>
-                            </div>
-                        </div>`;
-                        
-                        // Quotes
-                        if (t.quotes) {
-                            t.quotes.forEach(q => {
-                                quotesHtml += `
-                                <div class="glass-level-2 p-4 rounded-2xl border-l-4 border-${sentimentColor}">
-                                    <p class="text-[14px] italic text-on-surface">"${q}"</p>
-                                    <div class="mt-4 flex justify-between items-center text-[12px] text-on-surface-variant">
-                                        <span>From: ${t.theme_name}</span>
-                                    </div>
-                                </div>`;
-                            });
-                        }
-                    });
-                }
-                
-                document.getElementById('stat-validated').textContent = validatedQuotes;
-                document.getElementById('themesList').innerHTML = themesHtml || '<p class="p-6 text-on-surface-variant">No themes found.</p>';
-                document.getElementById('quotesGrid').innerHTML = quotesHtml || '<p class="text-on-surface-variant">No quotes found.</p>';
+  document.getElementById('stat-analyzed').textContent=reviewCount.toLocaleString();
+  document.getElementById('stat-themes').textContent=themes.length;
+  document.getElementById('stat-validated').textContent=validated;
+  document.getElementById('stat-rating').innerHTML=avg?`${avg}<span style="font-size:18px;color:var(--star);">★</span>`:'—';
+  document.getElementById('stat-sources').innerHTML=`${sources}`;
 
-            } catch(e) {
-                console.error(e);
-            }
-        }
+  // reviews WoW delta from ledger history (real data only)
+  const sorted=[...ledgerRuns].filter(r=>r.review_count).sort((a,b)=>a.iso_week.localeCompare(b.iso_week));
+  const idx=sorted.findIndex(r=>r.iso_week===week);
+  if(idx>0){
+    const prev=sorted[idx-1].review_count;
+    if(prev>0){ const pct=((reviewCount-prev)/prev)*100; document.getElementById('delta-analyzed').innerHTML=deltaHtml(pct,'vs '+sorted[idx-1].iso_week); }
+  }
+  document.getElementById('delta-sources').innerHTML='<div class="delta flat"><span style="width:6px;height:6px;border-radius:50%;background:var(--teal);display:inline-block;"></span>Live</div>';
 
-                function switchTab(tab) {
-            const runnerContent = document.getElementById('content-runner');
-            const ledgerContent = document.getElementById('content-ledger');
-            const overviewContent = document.getElementById('content-overview');
-            const btnLedger = document.getElementById('btn-ledger');
-            const btnOverview = document.getElementById('btn-overview');
+  // charts
+  buildVolume(ledgerRuns, week);
+  initChart('ratingChart',{type:'bar',
+    data:{labels:['5★','4★','3★','2★','1★'],datasets:[{data:[rd[5]||0,rd[4]||0,rd[3]||0,rd[2]||0,rd[1]||0],backgroundColor:['#2FE0AA','#57D6AC','#A9B2C0','#F0A98E','#FF8B7E'],borderRadius:5,barThickness:16}]},
+    options:{maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{font:{size:10}}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
+  initChart('sentimentChart',{type:'doughnut',
+    data:{labels:['Positive','Neutral','Negative'],datasets:[{data:[sd['Positive']||0,sd['Neutral']||0,sd['Negative']||0],backgroundColor:['#2FE0AA','#4A5568','#FF8B7E'],borderWidth:0,hoverOffset:4}]},
+    options:{maintainAspectRatio:false,cutout:'66%',plugins:{legend:{position:'bottom',labels:{boxWidth:8,boxHeight:8,padding:12,font:{size:11},usePointStyle:true}}}}});
 
-            [runnerContent, ledgerContent, overviewContent].forEach(el => el && el.classList.add('hidden'));
-            if(btnLedger) { btnLedger.classList.remove('text-primary', 'bg-primary/5'); btnLedger.classList.add('text-on-surface-variant'); }
-            if(btnOverview) { btnOverview.classList.remove('text-primary', 'bg-primary/5'); btnOverview.classList.add('text-on-surface-variant'); }
+  // themes
+  if(themes.length){
+    document.getElementById('themesList').innerHTML=themes.map(t=>{
+      const si=sentInfo(t.sentiment);
+      const tags=(t.teams||[]).map(x=>`<span class="tag">${x}</span>`).join('');
+      const mentions=t.mention_count||t.count||(t.quotes?t.quotes.length:'');
+      return `<div class="theme-row">
+        <div class="theme-ic" style="background:${si.bg};"><span class="msym" style="font-size:18px;color:${si.color};">${si.ic}</span></div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+            <span style="font-family:'Outfit';font-weight:600;font-size:14.5px;color:var(--text-hi);">${t.theme_name}</span>
+            <span class="pill" style="color:${si.color};background:${si.bg};"><span class="dot" style="background:${si.color};"></span>${si.label}</span>
+          </div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.5;">${t.summary||''}</div>
+          <div style="display:flex;gap:6px;margin-top:9px;flex-wrap:wrap;">${tags}</div>
+        </div>
+        ${mentions!==''?`<div style="text-align:right;flex-shrink:0;"><div style="font-family:'Outfit';font-weight:600;font-size:16px;color:var(--text);">${mentions}</div><div style="font-size:11px;color:var(--muted2);">mentions</div></div>`:''}
+      </div>`;
+    }).join('');
+  } else {
+    document.getElementById('themesList').innerHTML='<div class="empty" style="padding:32px;"><span class="msym">category</span><div style="font-size:13px;">No themes found for this week.</div></div>';
+  }
 
-            if (tab === 'home') {
-                if (runnerContent) runnerContent.classList.remove('hidden');
-                overviewContent.classList.remove('hidden');
-                if(btnOverview) { btnOverview.classList.add('text-primary', 'bg-primary/5'); btnOverview.classList.remove('text-on-surface-variant'); }
-                loadOverview();
-            } else if (tab === 'ledger') {
-                ledgerContent.classList.remove('hidden');
-                if(btnLedger) { btnLedger.classList.add('text-primary', 'bg-primary/5'); btnLedger.classList.remove('text-on-surface-variant'); }
-                loadLedger();
-            }
-        }
+  // quotes
+  const quotes=[];
+  themes.forEach(t=>{const si=sentInfo(t.sentiment);(t.quotes||[]).forEach(q=>quotes.push({q,theme:t.theme_name,si}));});
+  if(quotes.length){
+    document.getElementById('quotesGrid').innerHTML=quotes.slice(0,6).map(x=>`
+      <div class="quote" style="border-left-color:${x.si.color};">
+        <div class="qt">"${x.q}"</div>
+        <div class="qm"><span class="msym" style="font-size:14px;color:${x.si.color};">${x.si.ic}</span>${x.theme}</div>
+      </div>`).join('');
+  } else {
+    document.getElementById('quotesGrid').innerHTML='<div class="empty" style="padding:28px 12px;"><span class="msym" style="font-size:32px;">format_quote</span><div style="font-size:13px;">No validated quotes.</div></div>';
+  }
+}
 
-        async function loadLedger() {
-            const grid = document.getElementById('ledgerGrid');
-            grid.innerHTML = '<p class="text-on-surface-variant">Loading...</p>';
-            try {
-                const res = await fetch('/api/ledger');
-                const data = await res.json();
-                grid.innerHTML = '';
-                
-                if (data.runs.length === 0) {
-                    grid.innerHTML = '<p class="text-on-surface-variant">No runs found.</p>';
-                    return;
-                }
-                
-                data.runs.forEach(run => {
-                    const isSuccess = run.status === 'completed';
-                    const statusColor = isSuccess ? 'primary' : (run.status === 'failed' ? 'error' : 'on-surface-variant');
-                    
-                    grid.innerHTML += `
-                    <div class="glass-level-1 rounded-2xl p-6 hover:border-${statusColor}/30 transition-all">
-                        <div class="flex justify-between items-start mb-6">
-                            <div>
-                                <h3 class="font-headline-md text-[20px] font-semibold">${run.iso_week}</h3>
-                                <p class="text-label-sm text-on-surface-variant">Product: ${run.product}</p>
-                            </div>
-                            <span class="bg-${statusColor}/10 text-${statusColor} px-3 py-1 rounded-full text-label-sm font-bold border border-${statusColor}/20">${run.status}</span>
-                        </div>
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center text-label-md">
-                                <span class="text-on-surface-variant">Reviews</span>
-                                <span class="font-medium">${run.review_count || 0}</span>
-                            </div>
-                        </div>
-                    </div>`;
-                });
-            } catch(e) {
-                grid.innerHTML = '<p class="text-error">Failed to load ledger.</p>';
-            }
-        }
+function buildVolume(runs, highlight){
+  const sorted=[...(runs||[])].filter(r=>r.review_count!=null).sort((a,b)=>a.iso_week.localeCompare(b.iso_week)).slice(-8);
+  if(!sorted.length){ if(charts['volumeChart'])charts['volumeChart'].destroy(); return; }
+  initChart('volumeChart',{type:'line',
+    data:{labels:sorted.map(r=>r.iso_week.replace(/^\d{4}-/,'')),datasets:[{data:sorted.map(r=>r.review_count),borderColor:'#2FE0AA',backgroundColor:'rgba(47,224,170,0.10)',fill:true,tension:0.38,borderWidth:2,pointRadius:sorted.map(r=>r.iso_week===highlight?4:0),pointBackgroundColor:'#2FE0AA',pointHoverRadius:4}]},
+    options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{font:{size:10},maxTicksLimit:4}}}}});
+}
 
-        async function runPipeline() {
-            const btn = document.getElementById('runBtn');
-            const statusContainer = document.getElementById('statusContainer');
-            const statusText = document.getElementById('statusText');
-            const statusBar = document.getElementById('statusBar');
-            const statusPercent = document.getElementById('statusPercent');
-            const statusSpinner = document.getElementById('statusSpinner');
-            const successToast = document.getElementById('successToast');
-            
-            // Map steps to progress percentages
-            const stepProgress = {
-                'initializing': 10,
-                'ingestion': 30,
-                'analysis': 60,
-                'render': 80,
-                'delivery': 100
-            };
+/* ---------- tabs ---------- */
+function switchTab(tab){
+  const overview=document.getElementById('content-overview');
+  const ledger=document.getElementById('content-ledger');
+  document.getElementById('nav-dashboard').classList.toggle('active',tab==='home');
+  document.getElementById('nav-history').classList.toggle('active',tab==='ledger');
+  if(tab==='home'){
+    overview.classList.remove('hidden'); ledger.classList.add('hidden');
+    document.getElementById('pageTitle').textContent='Dashboard';
+    loadOverview();
+  } else {
+    ledger.classList.remove('hidden'); overview.classList.add('hidden');
+    document.getElementById('pageTitle').textContent='Run History';
+    document.getElementById('pageSub').textContent='Recent pipeline runs';
+    loadLedger();
+  }
+}
 
-            const stepNames = {
-                'initializing': 'Initializing Pipeline...',
-                'ingestion': 'Ingesting Play Store Data...',
-                'analysis': 'Running Analysis & LLM Summarization...',
-                'render': 'Rendering Report...',
-                'delivery': 'Delivering via MCP...'
-            };
+/* ---------- ledger ---------- */
+async function loadLedger(){
+  const grid=document.getElementById('ledgerGrid');
+  grid.innerHTML='<div class="skel" style="height:150px;"></div><div class="skel" style="height:150px;"></div><div class="skel" style="height:150px;"></div>';
+  try{
+    const res=await fetch('/api/ledger'); const data=await res.json();
+    const runs=data.runs||[];
+    if(!runs.length){ grid.innerHTML='<div class="empty" style="grid-column:1/-1;"><span class="msym">history</span><div style="font-size:14px;">No runs recorded yet.</div></div>'; return; }
+    grid.innerHTML=runs.map(run=>{
+      const ok=run.status==='completed'; const bad=run.status==='failed';
+      const cls=ok?'rs-ok':(bad?'rs-bad':'rs-neu');
+      return `<div class="card" style="padding:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:16px;">
+          <div><div style="font-family:'Outfit';font-weight:600;font-size:18px;color:var(--text-hi);">${run.iso_week}</div><div style="font-size:12px;color:var(--muted2);">${run.product}</div></div>
+          <span class="run-status ${cls}">${run.status}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:14px;border-top:1px solid var(--line);"><span style="color:var(--muted);">Reviews</span><span style="font-weight:600;color:var(--text);">${run.review_count!=null?run.review_count.toLocaleString():'—'}</span></div>
+        ${run.started_at?`<div style="display:flex;justify-content:space-between;font-size:13px;margin-top:8px;"><span style="color:var(--muted);">Started</span><span style="color:var(--muted);">${run.started_at}</span></div>`:''}
+      </div>`;
+    }).join('');
+  }catch(e){ grid.innerHTML='<div class="empty" style="grid-column:1/-1;color:var(--neg);"><span class="msym" style="color:var(--neg);">error</span>Failed to load history.</div>'; }
+}
 
-            btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
-            
-            statusContainer.classList.remove('hidden');
-            statusSpinner.className = 'loading-spinner !w-4 !h-4 !border-2 flex-shrink-0';
-            statusSpinner.innerHTML = '';
-            
-            statusBar.style.width = '0%';
-            statusPercent.textContent = '0%';
-            statusText.textContent = 'Starting...';
-            statusText.className = 'font-label-md text-label-md text-primary';
-            successToast.classList.add('hidden');
+/* ---------- run pipeline (SSE) ---------- */
+function showToast(ok,title,msg){
+  const t=document.getElementById('toast'); t.classList.remove('hidden');
+  const ic=document.getElementById('toastIcon');
+  ic.textContent=ok?'check_circle':'error'; ic.style.color=ok?'var(--teal)':'var(--neg)';
+  ic.parentElement.style.background=ok?'rgba(47,224,170,0.12)':'rgba(255,139,126,0.12)';
+  document.getElementById('toastTitle').textContent=title;
+  document.getElementById('toastMsg').textContent=msg;
+}
+function runPipeline(){
+  const btn=document.getElementById('runBtn');
+  const wrap=document.getElementById('progWrap');
+  const bar=document.getElementById('progBar');
+  const pct=document.getElementById('progPct');
+  const label=document.getElementById('progLabel');
+  const spin=document.getElementById('progSpin');
+  const stepProgress={initializing:10,ingestion:30,analysis:60,render:80,delivery:100};
+  const stepNames={initializing:'Initializing pipeline…',ingestion:'Ingesting Play Store reviews…',analysis:'Clustering themes & LLM summarization…',render:'Rendering report…',delivery:'Delivering via MCP…'};
 
-            const payload = {
-                product: document.getElementById('productSelect').value,
-                iso_week: document.getElementById('isoWeekInput').value,
-                email_mode: document.querySelector('input[name="delivery"]:checked').value,
-                dry_run: document.getElementById('dryRunToggle').checked
-            };
-            
-            const queryParams = new URLSearchParams(payload).toString();
-            const eventSource = new EventSource(`/api/run/stream?${queryParams}`);
-            
-            function showError(errorMsg) {
-                statusSpinner.className = 'w-5 h-5 rounded-full bg-error/20 flex items-center justify-center flex-shrink-0';
-                statusSpinner.innerHTML = '<span class="material-symbols-outlined text-[12px] text-error">close</span>';
-                statusText.textContent = `Error: ${errorMsg || 'Pipeline failed'}`;
-                statusText.className = 'font-label-md text-label-md text-error';
-                
-                eventSource.close();
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                
-                // Show Error Toast
-                successToast.classList.remove('hidden');
-                document.getElementById('toastIcon').textContent = 'error';
-                document.getElementById('toastIcon').className = 'material-symbols-outlined text-error';
-                document.getElementById('toastTitle').textContent = 'Pipeline Failed';
-                document.getElementById('toastTitle').className = 'font-label-md text-label-md font-bold text-error';
-                document.getElementById('toastMessage').textContent = errorMsg || 'An unknown error occurred.';
-            }
+  btn.disabled=true;
+  document.getElementById('runIcon').textContent='sync';
+  document.getElementById('runLabel').textContent='Running…';
+  wrap.classList.remove('hidden');
+  spin.className='spinner';
+  bar.style.width='0%'; pct.textContent='0%'; label.textContent='Starting…'; label.style.color='var(--teal)';
+  document.getElementById('toast').classList.add('hidden');
 
-            eventSource.onmessage = function(event) {
-                const data = JSON.parse(event.data);
-                
-                if (data.type === 'step') {
-                    const pct = stepProgress[data.step] || 0;
-                    statusBar.style.width = pct + '%';
-                    statusPercent.textContent = pct + '%';
-                    statusText.textContent = stepNames[data.step] || 'Processing...';
-                } else if (data.type === 'complete') {
-                    statusBar.style.width = '100%';
-                    statusPercent.textContent = '100%';
-                    
-                    const result = data.summary;
-                    
-                    statusSpinner.className = 'w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0';
-                    statusSpinner.innerHTML = '<span class="material-symbols-outlined text-[12px] text-primary">check</span>';
-                    
-                    if (result.status === 'success' || result.status === 'completed' || result.status === 'skipped_dry_run') {
-                        statusText.textContent = 'Completed Successfully';
-                        
-                        // Show Success Toast
-                        successToast.classList.remove('hidden');
-                        document.getElementById('toastIcon').textContent = 'check_circle';
-                        document.getElementById('toastIcon').className = 'material-symbols-outlined text-primary';
-                        document.getElementById('toastTitle').textContent = 'Pipeline Completed Successfully';
-                        document.getElementById('toastTitle').className = 'font-label-md text-label-md font-bold text-on-surface';
-                        document.getElementById('toastMessage').textContent = `Processed successfully.`;
-                        
-                    } else if (result.status === 'skipped_already_completed') {
-                        statusText.textContent = 'Skipped: Already Completed';
-                    }
-                    
-                    eventSource.close();
-                    btn.disabled = false;
-                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                } else if (data.type === 'error') {
-                    showError(data.error);
-                }
-            };
-            
-            eventSource.onerror = function() {
-                showError("Server connection error.");
-            };
-        }
-        
-        window.addEventListener("DOMContentLoaded", () => { switchTab("home"); });
-    </script>
+  const params=new URLSearchParams({
+    product:document.getElementById('productSelect').value,
+    iso_week:currentWeek,
+    email_mode:delivery,
+    dry_run:dryRun
+  }).toString();
+  const es=new EventSource(`/api/run/stream?${params}`);
+
+  function finish(){ btn.disabled=false; document.getElementById('runIcon').textContent='play_arrow'; document.getElementById('runLabel').textContent='Run Pulse'; es.close(); }
+  function fail(msg){
+    spin.className=''; spin.innerHTML='<span class="msym" style="color:var(--neg);font-size:18px;">error</span>';
+    label.textContent='Error: '+(msg||'Pipeline failed'); label.style.color='var(--neg)';
+    showToast(false,'Pipeline failed',msg||'An unknown error occurred.'); finish();
+  }
+  es.onmessage=function(ev){
+    const d=JSON.parse(ev.data);
+    if(d.type==='step'){
+      const p=stepProgress[d.step]||0; bar.style.width=p+'%'; pct.textContent=p+'%'; label.textContent=stepNames[d.step]||'Processing…';
+    } else if(d.type==='complete'){
+      bar.style.width='100%'; pct.textContent='100%';
+      spin.className=''; spin.innerHTML='<span class="msym" style="color:var(--teal);font-size:18px;">check_circle</span>';
+      const r=d.summary||{};
+      if(r.status==='skipped_already_completed'){ label.textContent='Skipped: already completed'; showToast(true,'Already completed','This week was processed earlier.'); }
+      else { label.textContent='Completed successfully'; showToast(true,'Pipeline completed','Report processed successfully.'); }
+      finish();
+      if(!document.getElementById('content-overview').classList.contains('hidden')) loadOverview();
+    } else if(d.type==='error'){ fail(d.error); }
+  };
+  es.onerror=function(){ fail('Server connection error.'); };
+}
+
+window.addEventListener('DOMContentLoaded',()=>switchTab('home'));
+</script>
 </body>
 </html>
