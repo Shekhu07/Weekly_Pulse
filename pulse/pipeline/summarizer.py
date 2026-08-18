@@ -1,19 +1,24 @@
 """LLM summarizer — Phase 2d.
 
-Uses Groq llama-3.3-70b-versatile to generate theme names,
-summaries, quotes, and action ideas per cluster.
+Calls a Groq chat model to generate theme names, summaries, quotes, and
+action ideas per cluster.
 
-Rate limits (llama-3.3-70b-versatile):
-  - 30 req/min  → ≥ 2s between requests
-  - 1,000 req/day → ≤ 10/run
-  - 12,000 tok/min → ~1,700 tokens/call
-  - 100,000 tok/day → cap at 12,000/run
+The model and per-theme output budget come from `config/pipeline.yaml`
+(`summarization.model`, `summarization.max_output_tokens_per_theme`); the
+constants below are only fallbacks. Groq retires models periodically — when a
+call 404s with "model does not exist", pick a replacement from
+`GET https://api.groq.com/openai/v1/models` and change the YAML.
+
+Note: the current default (`openai/gpt-oss-120b`) is a reasoning model. Its
+reasoning tokens are hidden from the response content but still count against
+`max_tokens`, which is why the per-theme budget is 800 rather than 400.
+`reasoning_effort="low"` keeps that overhead small.
 
 Token budget per request:
   - System prompt: ~200 tokens
   - 8 review samples × ~150 tokens: ~1,200 tokens
-  - Output JSON: ~300 tokens
-  - Total: ~1,700 tokens/call
+  - Output JSON + reasoning: ~500 tokens
+  - Total: ~1,900 tokens/call
 """
 
 from __future__ import annotations
@@ -28,7 +33,8 @@ from pulse.ingestion.models import ActionIdea, Review, Theme
 
 logger = logging.getLogger(__name__)
 
-_MODEL = "llama-3.3-70b-versatile"
+_MODEL = "openai/gpt-oss-120b"
+_MAX_OUTPUT_TOKENS_PER_THEME = 800
 _MAX_TOKENS_PER_RUN = 12_000
 _MAX_SAMPLES_PER_CLUSTER = 8
 _MAX_REVIEW_CHARS = 2000
@@ -71,7 +77,7 @@ def _trim_samples_to_budget(
     samples: list[Review],
     system_tokens: int,
     output_budget: int,
-    tpm_limit: int = 12_000,
+    tpm_limit: int = 8_000,  # openai/gpt-oss-120b TPM (was 12,000 on llama-3.3-70b)
 ) -> list[Review]:
     """Drop longest samples until estimated total request fits within TPM."""
     # Sort by length descending so we drop the longest first
@@ -135,18 +141,22 @@ def _call_groq(
     system_prompt: str,
     user_prompt: str,
     run_token_tracker: dict,
+    model: str = _MODEL,
+    max_tokens: int = _MAX_OUTPUT_TOKENS_PER_THEME,
 ) -> dict | None:
     """Call Groq with exponential backoff on 429/529. Returns parsed JSON or None."""
     for attempt in range(_MAX_RETRIES):
         try:
             response = client.chat.completions.create(
-                model=_MODEL,
+                model=model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
                 ],
-                max_tokens=400,
+                max_tokens=max_tokens,
                 temperature=0.3,
+                reasoning_effort="low",
+                response_format={"type": "json_object"},
             )
 
             usage = response.usage
@@ -210,17 +220,29 @@ def summarize_cluster(
         client = Groq(api_key=api_key)
 
     cluster_reviews = [reviews[i] for i in cluster["indices"]]
-    n_samples = pipeline_config.get("summarization", {}).get("max_samples_per_cluster", _MAX_SAMPLES_PER_CLUSTER)
+    summarization_config = pipeline_config.get("summarization", {})
+    n_samples = summarization_config.get("max_samples_per_cluster", _MAX_SAMPLES_PER_CLUSTER)
+    model = summarization_config.get("model", _MODEL)
+    max_output_tokens = summarization_config.get(
+        "max_output_tokens_per_theme", _MAX_OUTPUT_TOKENS_PER_THEME
+    )
     samples = _stratified_sample(cluster_reviews, n=n_samples)
 
     # Pre-flight token budget check
     system_tokens = _estimate_tokens(_SYSTEM_PROMPT)
-    samples = _trim_samples_to_budget(samples, system_tokens, output_budget=400)
+    samples = _trim_samples_to_budget(samples, system_tokens, output_budget=max_output_tokens)
 
     user_prompt = _build_user_prompt(cluster, samples)
     run_token_tracker = {"input": 0, "output": 0}
 
-    raw = _call_groq(client, _SYSTEM_PROMPT, user_prompt, run_token_tracker)
+    raw = _call_groq(
+        client,
+        _SYSTEM_PROMPT,
+        user_prompt,
+        run_token_tracker,
+        model=model,
+        max_tokens=max_output_tokens,
+    )
 
     if raw is None:
         logger.error(f"Summarizer returned None for cluster {cluster['label']}")

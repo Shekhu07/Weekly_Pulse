@@ -42,7 +42,7 @@ graph TB
 
     subgraph External
         PlayStore["Google Play Store"]
-        Groq["Groq API<br/>llama-3.3-70b-versatile"]
+        Groq["Groq API<br/>openai/gpt-oss-120b"]
         SentenceTransformers["sentence-transformers<br/>BAAI/bge-small-en-v1.5"]
         DocsAPI["Google Docs API"]
         GmailAPI["Gmail API"]
@@ -358,18 +358,18 @@ flowchart TD
 
 ### 7.3 LLM Summarization (Groq)
 
-**Provider:** Groq — `llama-3.3-70b-versatile`. Embeddings remain purely local via `sentence-transformers`; only summarization uses Groq (`GROQ_API_KEY`).
+**Provider:** Groq — `openai/gpt-oss-120b`. Embeddings remain purely local via `sentence-transformers`; only summarization uses Groq (`GROQ_API_KEY`).
 
 **Call pattern:** One Groq request per top cluster (not one mega-prompt). Sequential calls with ≥ 2s interval — no parallel LLM requests.
 
-**Groq rate limits — `llama-3.3-70b-versatile`:**
+**Groq rate limits — `openai/gpt-oss-120b`:**
 
 | Limit | Value | Pipeline Enforcement |
 | ----- | ----- | -------------------- |
 | Requests / Minute | 30 | `request_interval_seconds: 2` (max 30/min safe) |
 | Requests / Day | 1,000 | ≤ 10 req/run (5 themes + ≤ 5 re-prompts) → 100 runs/day headroom |
-| Tokens / Minute | 12,000 | Pre-flight token estimate per request; drop longest samples if over budget |
-| Tokens / Day | 100,000 | Cap `max_tokens_per_run: 12,000` → ~8 runs/day headroom |
+| Tokens / Minute | 8,000 | Pre-flight token estimate per request; drop longest samples if over budget |
+| Tokens / Day | no separate daily token cap | Cap `max_tokens_per_run: 12,000` still applies per run |
 
 **Rating-stratified sampling** _(data-validated, added after Groww analysis)_
 
@@ -624,7 +624,7 @@ clustering:
     min_samples: 3
 summarization:
   provider: groq
-  model: llama-3.3-70b-versatile
+  model: openai/gpt-oss-120b
   max_themes: 5
   max_tokens_per_run: 12000
   max_samples_per_cluster: 8
@@ -746,7 +746,7 @@ Architectural extension points already implied by the design:
 | Cluster ranking | `size × (6 − avg_rating)` | Surfaces actionable low-star complaint themes; 45% 1★ skew in Groww data validates this |
 | Dominant-cluster threshold | 60% (mandatory split) | Lowered from 80%: Groww's 1★ skew creates a large complaint cluster that would obscure distinct sub-themes at 80% |
 | LLM sample selection | 8 reviews, rating-stratified per cluster | Clusters of 100–140 reviews; stratification ensures LLM sees full sentiment range at no extra token cost |
-| Summarization LLM | Groq `llama-3.3-70b-versatile` | Cost-effective; ~1,700 tokens/call, ~8,500/run — well within 12K TPM and 100K TPD limits |
+| Summarization LLM | Groq `openai/gpt-oss-120b` | Cost-effective; ~1,700 tokens/call, ~8,500/run — well within 12K TPM and 100K TPD limits |
 | Embeddings | `sentence-transformers` BAAI/bge-small | Fully local, zero API cost, batch-friendly for ~1,000+ reviews |
 | Quote ellipsis rule | ≥ 15-char prefix required | Reviewers use trailing `....` as punctuation; short-prefix match causes false-positives |
 | Quote trust | Post-LLM substring validation against scrubbed text | Prevents fabricated user voice |
