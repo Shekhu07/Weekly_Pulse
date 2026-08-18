@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from pulse.agent.mcp_client import send_email_teaser, append_doc_section
+from pulse.agent.orchestrator import _resolve_recipients
 from pulse.ingestion.models import EmailTeaser, DocSection
 import httpx
 
@@ -88,3 +89,33 @@ def test_append_doc_section_idempotent(mock_client_class, mock_product_config):
     assert mock_client.post.call_count == 1
     args, kwargs = mock_client.post.call_args
     assert args[0] == "/search_doc"
+
+
+# ---------------------------------------------------------------------------
+# Recipient resolution (orchestrator)
+# ---------------------------------------------------------------------------
+
+def _config(recipients):
+    return {"delivery": {"email": {"recipients": recipients}}}
+
+
+def test_resolve_recipients_prefers_real_config_values(monkeypatch):
+    monkeypatch.setenv("PULSE_EMAIL_RECIPIENTS", "env@example.org")
+    assert _resolve_recipients(_config(["real@corp.com"])) == ["real@corp.com"]
+
+
+def test_resolve_recipients_falls_back_when_placeholders(monkeypatch):
+    monkeypatch.setenv("PULSE_EMAIL_RECIPIENTS", "a@corp.com, b@corp.com")
+    placeholders = ["product-leads@example.com", "support-leads@example.com"]
+    assert _resolve_recipients(_config(placeholders)) == ["a@corp.com", "b@corp.com"]
+
+
+def test_resolve_recipients_falls_back_when_empty(monkeypatch):
+    monkeypatch.setenv("PULSE_EMAIL_RECIPIENTS", "solo@corp.com")
+    assert _resolve_recipients(_config([])) == ["solo@corp.com"]
+
+
+def test_resolve_recipients_keeps_placeholders_when_env_unset(monkeypatch):
+    monkeypatch.delenv("PULSE_EMAIL_RECIPIENTS", raising=False)
+    placeholders = ["product-leads@example.com"]
+    assert _resolve_recipients(_config(placeholders)) == placeholders

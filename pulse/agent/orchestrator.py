@@ -28,6 +28,24 @@ from pulse.render.email_teaser import build_email_teaser
 
 logger = logging.getLogger(__name__)
 
+_PLACEHOLDER_RECIPIENTS = {"product-leads@example.com", "support-leads@example.com"}
+
+
+def _resolve_recipients(product_config: dict) -> list[str]:
+    """Resolve email recipients from product config, falling back to env.
+
+    Mirrors the google_doc_id fallback in mcp_client.append_doc_section: the
+    committed YAML carries placeholders, so real addresses can be supplied via
+    PULSE_EMAIL_RECIPIENTS (comma-separated) without putting them in git.
+    """
+    recipients = product_config.get("delivery", {}).get("email", {}).get("recipients", [])
+    if not recipients or set(recipients) <= _PLACEHOLDER_RECIPIENTS:
+        from pulse.config import get_env_var
+        raw = get_env_var("PULSE_EMAIL_RECIPIENTS", required=False)
+        if raw:
+            recipients = [addr.strip() for addr in raw.split(",") if addr.strip()]
+    return recipients
+
 
 def execute_run(run_context: RunContext, product_config: dict, pipeline_config: dict, progress_callback=None) -> dict:
     """Execute a full pulse run for a product and ISO week.
@@ -100,7 +118,7 @@ def execute_run(run_context: RunContext, product_config: dict, pipeline_config: 
 
         # 6. Deliver Email (Phase 5)
         teaser = build_email_teaser(report, run_context, doc_url=doc_url)
-        teaser.recipients = product_config.get("delivery", {}).get("email", {}).get("recipients", [])
+        teaser.recipients = _resolve_recipients(product_config)
         
         if not run_context.dry_run:
             logger.info("Phase 5: Email delivery")
